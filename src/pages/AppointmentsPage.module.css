@@ -1,0 +1,130 @@
+.weekNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-top: 1px solid var(--gray-100);
+  min-height: 400px;
+}
+
+.dayCol {
+  border-right: 1px solid var(--gray-100);
+  min-height: 400px;
+}
+
+.dayCol:last-child { border-right: none; }
+
+.today { background: #FAFAFE; }
+
+.dayHeader {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--gray-100);
+  text-align: center;
+  background: var(--gray-50);
+  position: sticky;
+  top: 56px;
+}
+
+.today .dayHeader { background: var(--primary-bg); }
+
+.dayName {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.today .dayName { color: var(--primary); }
+
+.dayNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 50%;
+  color: var(--gray-700);
+}
+
+.dayNumToday {
+  background: var(--primary);
+  color: white;
+}
+
+.dayBody { padding: 8px 4px; display: flex; flex-direction: column; gap: 4px; }
+
+.emptyDay {
+  font-size: 0.72rem;
+  color: var(--gray-300);
+  text-align: center;
+  padding: 16px 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.emptyDay:hover {
+  background: var(--gray-50);
+  color: var(--primary);
+}
+
+.apptCard {
+  background: var(--gray-50);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 0.1s;
+  border: 1px solid var(--gray-200);
+}
+
+.apptCard:hover {
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.listRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.listRow:hover { background: var(--gray-50); }
+
+.listTime {
+  min-width: 52px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--gray-700);
+}
+
+.listBar {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .weekGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .weekGrid { grid-template-columns: 1fr; }
+  .dayCol { border-right: none; border-bottom: 1px solid var(--gray-100); min-height: auto; }
+}

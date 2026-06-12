@@ -1,0 +1,91 @@
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) { .statsGrid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .statsGrid { grid-template-columns: 1fr; } }
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) { .mainGrid { grid-template-columns: 1fr; } }
+
+.appointmentList { padding: 4px 0; }
+
+.apptRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  transition: background 0.1s;
+}
+
+.apptRow:hover { background: var(--gray-50); }
+
+.apptTime {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  min-width: 44px;
+  text-align: center;
+}
+
+.apptColor {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.upcomingItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.upcomingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.vaccineItem {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 700px) { .slotsGrid { grid-template-columns: 1fr 1fr; } }
+
+.slotCard {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.slotTime {
+  font-size: 0.875rem;
+  color: var(--gray-700);
+  line-height: 1.4;
+}

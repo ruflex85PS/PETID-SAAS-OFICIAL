@@ -1,0 +1,117 @@
+import { useState } from 'react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard, Users, PawPrint, Calendar, Zap,
+  Clock, Menu, X, LogOut, ChevronRight, Bell
+} from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
+import styles from './AppLayout.module.css'
+
+const navItems = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/appointments', icon: Calendar, label: 'Agenda' },
+  { to: '/customers', icon: Users, label: 'Clientes' },
+  { to: '/pets', icon: PawPrint, label: 'Mascotas' },
+  { to: '/automations', icon: Zap, label: 'Automatizaciones' },
+  { to: '/available-slots', icon: Clock, label: 'Horarios Disponibles' },
+]
+
+export default function AppLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { organization, profile, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    await signOut()
+    navigate('/login')
+  }
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
+
+  return (
+    <div className={styles.layout}>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
+        {/* Header */}
+        <div className={styles.sidebarHeader}>
+          <div className={styles.brandMark}>
+            <span className={styles.brandIcon}>🐾</span>
+            <div>
+              <div className={styles.brandName}>PETID</div>
+              <div className={styles.orgName}>{organization?.name || 'Mi Negocio'}</div>
+            </div>
+          </div>
+          <button className="btn btn-ghost btn-icon show-mobile" onClick={() => setSidebarOpen(false)}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className={styles.nav}>
+          {navItems.map(({ to, icon: Icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `${styles.navItem} ${isActive ? styles.navItemActive : ''}`
+              }
+              onClick={() => setSidebarOpen(false)}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+              <ChevronRight size={14} className={styles.navChevron} />
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* User */}
+        <div className={styles.sidebarFooter}>
+          <div className={styles.userInfo}>
+            <div className="avatar">{initials}</div>
+            <div className={styles.userMeta}>
+              <div className={styles.userName}>{profile?.full_name || 'Usuario'}</div>
+              <div className={styles.userRole}>{profile?.role === 'owner' ? 'Propietario' : 'Staff'}</div>
+            </div>
+          </div>
+          <button
+            className="btn btn-ghost btn-icon"
+            onClick={handleSignOut}
+            title="Cerrar sesión"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <div className={styles.main}>
+        {/* Top bar */}
+        <header className={styles.topbar}>
+          <button
+            className="btn btn-ghost btn-icon show-mobile"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu size={20} />
+          </button>
+          <div className={styles.topbarRight}>
+            <button className="btn btn-ghost btn-icon" title="Notificaciones">
+              <Bell size={18} />
+            </button>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className={styles.content}>
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  )
+}
