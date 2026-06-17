@@ -3,7 +3,6 @@ import { X, Save } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { format } from 'date-fns'
-import { sendWhatsAppMessage, buildAppointmentMessage } from '../../lib/whatsapp'
 
 export default function AppointmentModal({ appointment, onClose, onSaved }) {
   const { organization } = useAuth()
@@ -34,7 +33,7 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
 
   async function loadSelectData() {
     const [{ data: cust }, { data: svc }] = await Promise.all([
-      supabase.from('customers').select('id, full_name, phone').eq('status', 'active').order('full_name'),
+      supabase.from('customers').select('id, full_name').eq('status', 'active').order('full_name'),
       supabase.from('services').select('id, name, duration_minutes, color').eq('is_active', true).order('name'),
     ])
     setCustomers(cust || [])
@@ -88,18 +87,7 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
     }
 
     if (error) { setError(error.message); setLoading(false) }
-    else {
-      if (!isEdit) {
-        const customer = customers.find(c => c.id === form.customer_id)
-        const pet = pets.find(p => p.id === form.pet_id)
-        const service = services.find(s => s.id === form.service_id)
-        if (customer?.phone) {
-          const msg = buildAppointmentMessage({ customerName: customer.full_name, petName: pet?.name, serviceName: service?.name || form.title, scheduledAt: form.scheduled_at, businessName: organization.name })
-          sendWhatsAppMessage(customer.phone, msg)
-        }
-      }
-      onSaved()
-    }
+    else onSaved()
   }
 
   const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', reptile: '🦎', other: '🐾' }
