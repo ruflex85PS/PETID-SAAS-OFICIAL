@@ -3,7 +3,7 @@ import { X, Save } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { format } from 'date-fns'
-import { sendWhatsAppMessage, buildAppointmentMessage } from '../../lib/whatsapp'
+import { sendAppointmentConfirmation } from '../../lib/whatsapp'
 
 export default function AppointmentModal({ appointment, onClose, onSaved }) {
   const { organization } = useAuth()
@@ -94,8 +94,7 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
         const pet = pets.find(p => p.id === form.pet_id)
         const service = services.find(s => s.id === form.service_id)
         if (customer?.phone) {
-          const msg = buildAppointmentMessage({ customerName: customer.full_name, petName: pet?.name, serviceName: service?.name || form.title, scheduledAt: form.scheduled_at, businessName: organization.name })
-          sendWhatsAppMessage(customer.phone, msg)
+          const fecha = new Date(form.scheduled_at).toLocaleDateString("es-EC", { weekday: "long", year: "numeric", month: "long", day: "numeric" }); const hora = new Date(form.scheduled_at).toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" }); sendAppointmentConfirmation(customer.phone, { customerName: customer.full_name, businessName: organization.name, fecha, hora, serviceName: service?.name || form.title })
         }
       }
       onSaved()
