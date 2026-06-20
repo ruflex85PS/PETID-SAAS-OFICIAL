@@ -50,7 +50,7 @@ export default function AppLayout() {
         {/* Header */}
         <div className={styles.sidebarHeader}>
           <div className={styles.brandMark}>
-            <span className={styles.brandIcon}>🐾</span>
+            <img src="/logo.png" alt="PETID" style={{height: 40, width: 40, objectFit: "contain"}} />
             <div>
               <div className={styles.brandName}>PETID</div>
               <div className={styles.orgName}>{organization?.name || 'Mi Negocio'}</div>
