@@ -7,7 +7,13 @@ import {
 import { useAuth } from '../../context/AuthContext'
 import styles from './AppLayout.module.css'
 
-const navItems = [
+const clientNavItems = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/appointments', icon: Calendar, label: 'Agenda' },
+  { to: '/customers', icon: Users, label: 'Clientes' },
+  { to: '/pets', icon: PawPrint, label: 'Mascotas' },
+]
+const adminNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/appointments', icon: Calendar, label: 'Agenda' },
   { to: '/customers', icon: Users, label: 'Clientes' },
@@ -19,6 +25,8 @@ const navItems = [
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { organization, profile, signOut } = useAuth()
+  const isSuperAdmin = profile?.is_super_admin === true
+  const navItems = isSuperAdmin ? adminNavItems : clientNavItems
   const navigate = useNavigate()
 
   async function handleSignOut() {
