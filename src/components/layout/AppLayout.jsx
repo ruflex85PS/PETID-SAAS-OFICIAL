@@ -17,12 +17,17 @@ const navByIndustry = {
   health: [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/appointments", icon: Calendar, label: "Agenda" },
-    { to: "/customers", icon: Users, label: "Pacientes" },
+    { to: "/customers", icon: Users, label: "Clientes" },
+    { to: "/specialties", icon: Zap, label: "Especialidades" },
+    { to: "/available-slots", icon: Clock, label: "Turnos Disponibles" },
+    { to: "/automations", icon: Zap, label: "Automatizaciones" },
   ],
   insurance: [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/appointments", icon: Calendar, label: "Agenda" },
     { to: "/customers", icon: Users, label: "Clientes" },
+    { to: "/policies", icon: Zap, label: "Polizas" },
+    { to: "/renewals", icon: Clock, label: "Renovaciones" },
   ],
 }
 const clientNavItems = [
