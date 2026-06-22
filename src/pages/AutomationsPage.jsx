@@ -36,11 +36,6 @@ export default function AutomationsPage() {
       .from('automations')
       .select(`
         *,
-        appointments (
-          title, scheduled_at,
-          customers (full_name, phone),
-          pets (name, species)
-        )
       `)
       .order('scheduled_for', { ascending: false })
       .limit(200)
