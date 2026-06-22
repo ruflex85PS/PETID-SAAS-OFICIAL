@@ -7,6 +7,24 @@ import {
 import { useAuth } from '../../context/AuthContext'
 import styles from './AppLayout.module.css'
 
+const navByIndustry = {
+  veterinary: [
+    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/appointments", icon: Calendar, label: "Agenda" },
+    { to: "/customers", icon: Users, label: "Clientes" },
+    { to: "/pets", icon: PawPrint, label: "Mascotas" },
+  ],
+  health: [
+    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/appointments", icon: Calendar, label: "Agenda" },
+    { to: "/customers", icon: Users, label: "Pacientes" },
+  ],
+  insurance: [
+    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { to: "/appointments", icon: Calendar, label: "Agenda" },
+    { to: "/customers", icon: Users, label: "Clientes" },
+  ],
+}
 const clientNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/appointments', icon: Calendar, label: 'Agenda' },
@@ -26,7 +44,8 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { organization, profile, signOut } = useAuth()
   const isSuperAdmin = profile?.is_super_admin === true
-  const navItems = isSuperAdmin ? adminNavItems : clientNavItems
+  const industry = organization?.industry || "veterinary"
+  const navItems = isSuperAdmin ? adminNavItems : (navByIndustry[industry] || navByIndustry.veterinary)
   const navigate = useNavigate()
 
   async function handleSignOut() {

@@ -4,14 +4,9 @@ import { supabase } from '../lib/supabase'
 import { Building2, ArrowRight } from 'lucide-react'
 
 const INDUSTRIES = [
-  { value: 'veterinary', label: '🐾 Veterinaria', desc: 'Clínica veterinaria o pet shop' },
-  { value: 'medical', label: '🏥 Consultorio Médico', desc: 'Médico general o especialista' },
-  { value: 'dental', label: '🦷 Odontología', desc: 'Clínica dental o dentista' },
-  { value: 'psychology', label: '🧠 Psicología', desc: 'Psicólogo o terapeuta' },
-  { value: 'physio', label: '💪 Fisioterapia', desc: 'Rehabilitación física' },
-  { value: 'beauty', label: '💅 Centro Estético', desc: 'Spa, estética o belleza' },
-  { value: 'nutrition', label: '🥗 Nutrición', desc: 'Nutricionista o dietista' },
-  { value: 'other', label: '📋 Otro', desc: 'Cualquier negocio con citas' },
+  { value: 'veterinary', label: '🐾 PETID Vet', desc: 'Clínica veterinaria o pet shop' },
+  { value: 'health', label: '🏥 PETID Salud', desc: 'Médicos, especialistas, clínicas' },
+  { value: 'insurance', label: '🛡️ PETID Seguros', desc: 'Brokers y aseguradoras' },
 ]
 
 export default function SetupOrganizationPage() {
