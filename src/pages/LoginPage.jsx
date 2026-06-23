@@ -46,7 +46,7 @@ export default function LoginPage() {
           <input
             type="email"
             className="form-control"
-            placeholder="tu@correo.com"
+            placeholder="tu@correo.com" autoComplete="off"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -63,7 +63,7 @@ export default function LoginPage() {
             <input
               type={showPassword ? 'text' : 'password'}
               className="form-control"
-              placeholder="••••••••"
+              placeholder="••••••••" autoComplete="new-password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
