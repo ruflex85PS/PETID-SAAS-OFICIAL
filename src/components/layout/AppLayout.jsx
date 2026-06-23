@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, PawPrint, Calendar, Zap,
-  Clock, Menu, X, LogOut, ChevronRight, Bell
+  Clock, Menu, X, LogOut, ChevronRight, Bell, MessageSquare
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import styles from './AppLayout.module.css'
@@ -20,6 +20,7 @@ const adminNavItems = [
   { to: '/pets', icon: PawPrint, label: 'Mascotas' },
   { to: '/automations', icon: Zap, label: 'Automatizaciones' },
   { to: '/available-slots', icon: Clock, label: 'Horarios Disponibles' },
+  { to: '/templates', icon: MessageSquare, label: 'Plantillas WhatsApp' },
 ]
 
 export default function AppLayout() {
