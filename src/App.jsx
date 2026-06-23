@@ -83,6 +83,7 @@ export default function App() {
         <Route path="pets/:id" element={<PetDetailPage />} />
         <Route path="appointments" element={<AppointmentsPage />} />
         <Route path="automations" element={<AutomationsPage />} />
+        <Route path="templates" element={<TemplatesPage />} />
         <Route path="available-slots" element={<AvailableSlotsPage />} />
       </Route>
 

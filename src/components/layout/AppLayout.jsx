@@ -20,7 +20,7 @@ const adminNavItems = [
   { to: '/pets', icon: PawPrint, label: 'Mascotas' },
   { to: '/automations', icon: Zap, label: 'Automatizaciones' },
   { to: '/available-slots', icon: Clock, label: 'Horarios Disponibles' },
-  { to: '/templates', icon: MessageSquare, label: 'Plantillas WhatsApp' },
+  { to: 'templates', icon: MessageSquare, label: 'Plantillas WhatsApp' },
 ]
 
 export default function AppLayout() {
