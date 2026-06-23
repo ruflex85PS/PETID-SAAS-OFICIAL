@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import TemplatesPage from './pages/TemplatesPage'
+import AdminPage from './pages/AdminPage'
 import { useAuth } from './context/AuthContext'
 import AppLayout from './components/layout/AppLayout'
 import AuthLayout from './components/layout/AuthLayout'
@@ -84,6 +85,7 @@ export default function App() {
         <Route path="appointments" element={<AppointmentsPage />} />
         <Route path="automations" element={<AutomationsPage />} />
         <Route path="templates" element={<TemplatesPage />} />
+        <Route path="admin" element={<AdminPage />} />
         <Route path="available-slots" element={<AvailableSlotsPage />} />
       </Route>
 
