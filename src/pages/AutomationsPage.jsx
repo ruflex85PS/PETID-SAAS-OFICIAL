@@ -28,6 +28,8 @@ export default function AutomationsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all') // all | pending | sent | failed
   const [typeFilter, setTypeFilter] = useState('all')
+  const { profile } = useAuth()
+  const isSuperAdmin = profile?.is_super_admin === true
   const [retrying, setRetrying] = useState(null)
 
   const load = useCallback(async () => {
@@ -262,6 +264,7 @@ export default function AutomationsPage() {
                     {statusInfo.label}
                   </span>
                   <div style={{ display: 'flex', gap: 4 }}>
+                    {isSuperAdmin && (
                     {automation.status === 'failed' && (
                       <button
                         className="btn btn-secondary"
@@ -281,6 +284,7 @@ export default function AutomationsPage() {
                       >
                         Cancelar
                       </button>
+                    )}
                     )}
                   </div>
                 </div>
