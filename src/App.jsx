@@ -65,7 +65,7 @@ export default function App() {
   return (
     <Routes>
       {/* Landing */}
-      <Route path="/welcome" element={<LandingPage />} />
+      <Route path="/welcome" element={<PublicRoute><LandingPage /></PublicRoute>} />
       {/* Public routes */}
       <Route path="/login" element={<PublicRoute><AuthLayout><LoginPage /></AuthLayout></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><AuthLayout><RegisterPage /></AuthLayout></PublicRoute>} />
