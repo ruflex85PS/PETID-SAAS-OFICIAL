@@ -7,29 +7,6 @@ import {
 import { useAuth } from '../../context/AuthContext'
 import styles from './AppLayout.module.css'
 
-const navByIndustry = {
-  veterinary: [
-    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/appointments", icon: Calendar, label: "Agenda" },
-    { to: "/customers", icon: Users, label: "Clientes" },
-    { to: "/pets", icon: PawPrint, label: "Mascotas" },
-  ],
-  health: [
-    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/appointments", icon: Calendar, label: "Agenda" },
-    { to: "/customers", icon: Users, label: "Clientes" },
-    { to: "/specialties", icon: Zap, label: "Especialidades" },
-    { to: "/available-slots", icon: Clock, label: "Turnos Disponibles" },
-    { to: "/automations", icon: Zap, label: "Automatizaciones" },
-  ],
-  insurance: [
-    { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { to: "/appointments", icon: Calendar, label: "Agenda" },
-    { to: "/customers", icon: Users, label: "Clientes" },
-    { to: "/policies", icon: Zap, label: "Polizas" },
-    { to: "/renewals", icon: Clock, label: "Renovaciones" },
-  ],
-}
 const clientNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/appointments', icon: Calendar, label: 'Agenda' },

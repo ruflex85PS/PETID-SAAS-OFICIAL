@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
 import { useAuth } from './context/AuthContext'
 import AppLayout from './components/layout/AppLayout'
 import AuthLayout from './components/layout/AuthLayout'
@@ -64,8 +63,6 @@ function LoadingScreen() {
 export default function App() {
   return (
     <Routes>
-      {/* Landing */}
-      <Route path="/welcome" element={<PublicRoute><LandingPage /></PublicRoute>} />
       {/* Public routes */}
       <Route path="/login" element={<PublicRoute><AuthLayout><LoginPage /></AuthLayout></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><AuthLayout><RegisterPage /></AuthLayout></PublicRoute>} />
