@@ -264,8 +264,7 @@ export default function AutomationsPage() {
                     {statusInfo.label}
                   </span>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    {isSuperAdmin && (
-                    {automation.status === 'failed' && (
+                    {isSuperAdmin && automation.status === 'failed' && (
                       <button
                         className="btn btn-secondary"
                         style={{ fontSize: 11, padding: '3px 8px' }}
@@ -276,7 +275,7 @@ export default function AutomationsPage() {
                         Reintentar
                       </button>
                     )}
-                    {automation.status === 'pending' && (
+                    {isSuperAdmin && automation.status === 'pending' && (
                       <button
                         className="btn btn-secondary"
                         style={{ fontSize: 11, padding: '3px 8px', color: 'var(--gray-500)' }}
@@ -284,7 +283,6 @@ export default function AutomationsPage() {
                       >
                         Cancelar
                       </button>
-                    )}
                     )}
                   </div>
                 </div>
