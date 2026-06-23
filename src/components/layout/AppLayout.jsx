@@ -26,8 +26,7 @@ export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { organization, profile, signOut } = useAuth()
   const isSuperAdmin = profile?.is_super_admin === true
-  const industry = organization?.industry || "veterinary"
-  const navItems = isSuperAdmin ? adminNavItems : (navByIndustry[industry] || navByIndustry.veterinary)
+  const navItems = isSuperAdmin ? adminNavItems : clientNavItems
   const navigate = useNavigate()
 
   async function handleSignOut() {
