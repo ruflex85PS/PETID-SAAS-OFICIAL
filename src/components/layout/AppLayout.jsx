@@ -85,7 +85,7 @@ export default function AppLayout() {
             <div className="avatar">{initials}</div>
             <div className={styles.userMeta}>
               <div className={styles.userName}>{profile?.full_name || 'Usuario'}</div>
-              <div className={styles.userRole}>{profile?.role === 'owner' ? 'Propietario' : 'Staff'}</div>
+              <div className={styles.userRole}>{isSuperAdmin ? '⚙️ Super Admin PETID' : profile?.role === 'owner' ? 'Propietario' : 'Staff'}</div>
             </div>
           </div>
           <button
