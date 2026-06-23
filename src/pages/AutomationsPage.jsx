@@ -34,9 +34,7 @@ export default function AutomationsPage() {
     setLoading(true)
     const { data } = await supabase
       .from('automations')
-      .select(`
-        *,
-      `)
+      .select("*")
       .order('scheduled_for', { ascending: false })
       .limit(200)
 
