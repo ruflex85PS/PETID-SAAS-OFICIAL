@@ -12,6 +12,8 @@ const clientNavItems = [
   { to: '/appointments', icon: Calendar, label: 'Agenda' },
   { to: '/customers', icon: Users, label: 'Clientes' },
   { to: '/pets', icon: PawPrint, label: 'Mascotas' },
+  { to: 'available-slots', icon: Clock, label: 'Horarios Disponibles' },
+  { to: 'automations', icon: Zap, label: 'Automatizaciones' },
 ]
 const adminNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
