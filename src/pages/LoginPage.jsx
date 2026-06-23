@@ -96,6 +96,10 @@ export default function LoginPage() {
         <Link to="/register">Crear cuenta gratuita</Link>
       </div>
 
+      {/* Super Admin */}
+      <div style={{ textAlign: "center", marginTop: 16, paddingTop: 16, borderTop: "1px solid #eee" }}>
+        <button onClick={() => { setEmail("alvaroandres2802@gmail.com") }} style={{ background: "none", border: "none", color: "#999", fontSize: "0.75rem", cursor: "pointer", textDecoration: "underline" }}>Acceso Super Admin</button>
+      </div>
       {/* Demo hint */}
       <div className={styles.demoHint}>
         <strong>Cuenta demo:</strong> usa las credenciales de tu proyecto Supabase.<br />
