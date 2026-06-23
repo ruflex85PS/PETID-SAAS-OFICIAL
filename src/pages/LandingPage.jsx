@@ -14,7 +14,7 @@ export default function LandingPage() {
       <p style={{color:'rgba(255,255,255,0.8)',marginBottom:40}}>Selecciona tu tipo de cuenta</p>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16,width:'100%',maxWidth:900}}>
         {options.map(o => (
-          <div key={o.industry} onClick={() => navigate(o.industry === 'admin' ? '/login' : '/register?industry=' + o.industry)} style={{background:'white',borderRadius:16,padding:28,cursor:'pointer',textAlign:'center',border:'3px solid '+o.color}}>
+          <div key={o.industry} onClick={() => o.industry === 'admin' ? navigate('/login') : (sessionStorage.setItem('selectedIndustry', o.industry), navigate('/register?industry=' + o.industry))} style={{background:'white',borderRadius:16,padding:28,cursor:'pointer',textAlign:'center',border:'3px solid '+o.color}}>
             <div style={{fontSize:'3rem',marginBottom:12}}>{o.icon}</div>
             <h2 style={{color:o.color,marginBottom:8}}>{o.title}</h2>
             <p style={{color:'#666',fontSize:'0.9rem'}}>{o.desc}</p>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { Building2, ArrowRight } from 'lucide-react'
@@ -11,7 +12,8 @@ const INDUSTRIES = [
 
 export default function SetupOrganizationPage() {
   const [name, setName] = useState('')
-  const [industry, setIndustry] = useState('veterinary')
+  const [searchParams] = useSearchParams()
+  const [industry, setIndustry] = useState(searchParams.get('industry') || sessionStorage.getItem('selectedIndustry') || 'veterinary')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [address, setAddress] = useState('')

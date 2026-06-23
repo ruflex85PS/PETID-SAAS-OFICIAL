@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { UserPlus } from 'lucide-react'
@@ -12,6 +13,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const { signUp } = useAuth()
+  const [searchParams] = useSearchParams()
+  const industry = searchParams.get("industry") || "veterinary"
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -41,7 +44,7 @@ export default function RegisterPage() {
             Enviamos un enlace de confirmación a <strong>{email}</strong>.<br />
             Haz clic en el enlace para activar tu cuenta.
           </p>
-          <Link to="/login" className="btn btn-primary" style={{ justifyContent: 'center' }}>
+          <Link to={'/login?industry=' + industry} className="btn btn-primary" style={{ justifyContent: 'center' }}>
             Ir al inicio de sesión
           </Link>
         </div>
