@@ -23,6 +23,7 @@ const adminNavItems = [
   { to: '/automations', icon: Zap, label: 'Automatizaciones' },
   { to: '/available-slots', icon: Clock, label: 'Horarios Disponibles' },
   { to: 'templates', icon: MessageSquare, label: 'Plantillas WhatsApp' },
+  { to: 'admin', icon: Users, label: 'Clientes PETID' },
 ]
 
 export default function AppLayout() {
