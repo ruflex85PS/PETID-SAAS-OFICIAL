@@ -1,3 +1,22 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL,
+  process.env.VITE_SUPABASE_ANON_KEY
+)
+
+async function sendWhatsApp(to, message) {
+  const token = process.env.VITE_WHATSAPP_TOKEN
+  const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
+  const cleanPhone = to.replace(/\D/g, '')
+  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: message } })
+  })
+}
+
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     const mode = req.query['hub.mode']
@@ -20,29 +39,58 @@ export default async function handler(req, res) {
       if (message?.type === 'button') {
         const phone = message.from
         const buttonText = message.button?.text
-        const token = process.env.VITE_WHATSAPP_TOKEN
-        const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
 
-        let replyMsg = ''
-        if (buttonText === 'Confirmar') {
-          replyMsg = 'Perfecto, tu cita esta confirmada. Te esperamos!'
-        } else if (buttonText === 'Reprogramar') {
-          replyMsg = 'Entendido, nos pondremos en contacto contigo para reagendar tu cita. Que tengas un feliz dia!'
-        } else if (buttonText === 'Cancelar') {
-          replyMsg = 'Lamentamos que no puedas asistir. Tu cita ha sido cancelada. Hasta pronto!'
-        }
+        const cleanPhone = phone.replace(/\D/g, '')
+        const localPhone = '0' + cleanPhone.slice(3)
 
-        if (replyMsg && token && phoneId) {
-          await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              messaging_product: 'whatsapp',
-              to: phone,
-              type: 'text',
-              text: { body: replyMsg }
-            })
-          })
+        const { data: customers } = await supabase
+          .from('customers')
+          .select('id, full_name, organization_id')
+          .or('phone.eq.' + phone + ',phone.eq.' + localPhone + ',phone.eq.+' + cleanPhone)
+          .limit(1)
+
+        const customer = customers?.[0]
+
+        if (customer) {
+          const now = new Date()
+          const future = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+          const { data: appointments } = await supabase
+            .from('appointments')
+            .select('id, title, scheduled_at')
+            .eq('customer_id', customer.id)
+            .eq('status', 'scheduled')
+            .gte('scheduled_at', now.toISOString())
+            .lte('scheduled_at', future.toISOString())
+            .order('scheduled_at', { ascending: true })
+            .limit(1)
+
+          const appointment = appointments?.[0]
+
+          if (appointment) {
+            let newStatus = 'scheduled'
+            let replyMsg = ''
+
+            if (buttonText === 'Confirmar') {
+              newStatus = 'confirmed'
+              replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
+            } else if (buttonText === 'Reprogramar') {
+              newStatus = 'scheduled'
+              replyMsg = 'Entendido ' + customer.full_name + ', nos pondremos en contacto contigo para reagendar tu cita. Que tengas un feliz dia!'
+            } else if (buttonText === 'Cancelar') {
+              newStatus = 'cancelled'
+              replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'
+            }
+
+            if (newStatus !== 'scheduled' || buttonText === 'Reprogramar') {
+              await supabase
+                .from('appointments')
+                .update({ status: newStatus })
+                .eq('id', appointment.id)
+            }
+
+            await sendWhatsApp(phone, replyMsg)
+          }
         }
       }
     } catch (err) {
