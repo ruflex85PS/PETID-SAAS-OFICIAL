@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Plus, ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, addDays } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -17,6 +18,7 @@ const STATUS_COLOR = {
 }
 
 export default function AppointmentsPage() {
+  const { isSuspended } = useOutletContext() || {}
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)

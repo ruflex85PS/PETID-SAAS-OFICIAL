@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, Trash2, Phone, Mail, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -6,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import CustomerModal from '../components/clients/CustomerModal'
 
 export default function CustomersPage() {
+  const { isSuspended } = useOutletContext() || {}
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -51,7 +53,7 @@ export default function CustomersPage() {
           <div className="page-title">Clientes</div>
           <div className="page-subtitle">{customers.length} clientes registrados</div>
         </div>
-        <button className="btn btn-primary" onClick={openCreate}>
+        <button className="btn btn-primary" onClick={openCreate} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
           <Plus size={16} /> Nuevo Cliente
         </button>
       </div>

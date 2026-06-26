@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, PawPrint } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -9,6 +10,7 @@ const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', r
 const SPECIES_LABEL = { dog: 'Perro', cat: 'Gato', bird: 'Ave', rabbit: 'Conejo', reptile: 'Reptil', other: 'Otro' }
 
 export default function PetsPage() {
+  const { isSuspended } = useOutletContext() || {}
   const [pets, setPets] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

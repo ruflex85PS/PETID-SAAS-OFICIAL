@@ -119,9 +119,19 @@ export default function AppLayout() {
           </div>
         </header>
 
+        {/* Suspended banner */}
+        {organization?.status === 'suspended' && !isSuperAdmin && (
+          <div style={{background:'#fee2e2',borderBottom:'2px solid #dc2626',padding:'12px 24px',display:'flex',alignItems:'center',gap:12}}>
+            <span style={{fontSize:'1.2rem'}}>🔒</span>
+            <div>
+              <strong style={{color:'#dc2626'}}>Cuenta suspendida</strong>
+              <span style={{color:'#7f1d1d',marginLeft:8,fontSize:'0.9rem'}}>Tu cuenta está suspendida por falta de pago. Comunícate con PETID Admin para reactivarla.</span>
+            </div>
+          </div>
+        )}
         {/* Content */}
         <main className={styles.content}>
-          <Outlet />
+          <Outlet context={{ isSuspended: organization?.status === 'suspended' && !isSuperAdmin }} />
         </main>
       </div>
     </div>
