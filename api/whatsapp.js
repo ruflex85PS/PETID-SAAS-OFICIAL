@@ -42,11 +42,12 @@ export default async function handler(req, res) {
 
         const cleanPhone = phone.replace(/\D/g, '')
         const localPhone = '0' + cleanPhone.slice(3)
+        const localPhone2 = cleanPhone.slice(3)
 
         const { data: customers } = await supabase
           .from('customers')
           .select('id, full_name, organization_id')
-          .or('phone.eq.' + phone + ',phone.eq.' + localPhone + ',phone.eq.+' + cleanPhone)
+          .or('phone.eq.' + phone + ',phone.eq.' + localPhone + ',phone.eq.' + localPhone2 + ',phone.eq.+' + cleanPhone)
           .limit(1)
 
         const customer = customers?.[0]
