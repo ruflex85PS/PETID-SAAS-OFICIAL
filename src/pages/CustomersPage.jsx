@@ -7,15 +7,15 @@ import { useAuth } from '../context/AuthContext'
 import CustomerModal from '../components/clients/CustomerModal'
 
 export default function CustomersPage() {
-  const { organization, profile } = useAuth()
-  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
+
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [deleting, setDeleting] = useState(null)
-  const { organization } = useAuth()
+  const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
   useEffect(() => { if (organization) loadCustomers() }, [organization])
 
