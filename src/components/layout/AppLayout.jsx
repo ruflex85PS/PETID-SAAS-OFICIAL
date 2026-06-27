@@ -131,7 +131,7 @@ export default function AppLayout() {
         )}
         {/* Content */}
         <main className={styles.content}>
-          <Outlet context={{ isSuspended: organization?.status === 'suspended' && !isSuperAdmin }} />
+          <Outlet />
         </main>
       </div>
     </div>

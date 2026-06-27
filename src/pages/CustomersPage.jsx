@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext } from 'react-router-dom'
+
 import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, Trash2, Phone, Mail, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
@@ -7,7 +7,8 @@ import { useAuth } from '../context/AuthContext'
 import CustomerModal from '../components/clients/CustomerModal'
 
 export default function CustomersPage() {
-  const { isSuspended } = useOutletContext() || {}
+  const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
