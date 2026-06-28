@@ -50,6 +50,8 @@ export default async function handler(req, res) {
           .or('phone.eq.' + phone + ',phone.eq.' + localPhone + ',phone.eq.' + localPhone2 + ',phone.eq.+' + cleanPhone)
           .limit(1)
 
+        console.log('Phone received:', phone, 'Clean:', cleanPhone, 'Local:', localPhone)
+console.log('Customers found:', JSON.stringify(customers))
         const customer = customers?.[0]
 
         if (customer) {
@@ -66,6 +68,7 @@ export default async function handler(req, res) {
             .order('scheduled_at', { ascending: true })
             .limit(1)
 
+          console.log('Appointments found:', JSON.stringify(appointments))
           const appointment = appointments?.[0]
 
           if (appointment) {
