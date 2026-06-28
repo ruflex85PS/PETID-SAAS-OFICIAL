@@ -29,71 +29,78 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const body = req.body
     try {
-      const entry = body.entry?.[0]
-      const changes = entry?.changes?.[0]
-      const value = changes?.value
-      const message = value?.messages?.[0]
+      const body = req.body
+      const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]
+      
+      console.log('Full body:', JSON.stringify(body))
+      console.log('Message:', JSON.stringify(message))
 
-      if (message?.type === 'button') {
+      if (message) {
         const phone = message.from
-        const buttonText = message.button?.text
+        const msgType = message.type
+        
+        let buttonText = ''
+        if (msgType === 'button') {
+          buttonText = message.button?.text
+        } else if (msgType === 'interactive') {
+          buttonText = message.interactive?.button_reply?.title || message.interactive?.list_reply?.title
+        }
 
-        const cleanPhone = phone.replace(/\D/g, '')
-        const localPhone = '0' + cleanPhone.slice(3)
-        const localPhone2 = cleanPhone.slice(3)
+        console.log('Phone:', phone, 'Type:', msgType, 'Button:', buttonText)
 
-        const { data: customers } = await supabase
-          .from('customers')
-          .select('id, full_name, organization_id')
-          .or('phone.eq.' + phone + ',phone.eq.' + localPhone + ',phone.eq.' + localPhone2 + ',phone.eq.+' + cleanPhone)
-          .limit(1)
+        if (buttonText) {
+          const cleanPhone = phone.replace(/\D/g, '')
+          const localPhone = '0' + cleanPhone.slice(3)
 
-        console.log('Phone received:', phone, 'Clean:', cleanPhone, 'Local:', localPhone)
-console.log('Customers found:', JSON.stringify(customers))
-        const customer = customers?.[0]
-
-        if (customer) {
-          const now = new Date()
-          const future = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-
-          const { data: appointments } = await supabase
-            .from('appointments')
-            .select('id, title, scheduled_at')
-            .eq('customer_id', customer.id)
-            .eq('status', 'scheduled')
-            .gte('scheduled_at', now.toISOString())
-            .lte('scheduled_at', future.toISOString())
-            .order('scheduled_at', { ascending: true })
+          const { data: customers } = await supabase
+            .from('customers')
+            .select('id, full_name, organization_id')
+            .or('phone.eq.' + localPhone + ',phone.eq.' + phone + ',phone.eq.+' + cleanPhone)
             .limit(1)
 
-          console.log('Appointments found:', JSON.stringify(appointments))
-          const appointment = appointments?.[0]
+          console.log('Customers:', JSON.stringify(customers))
+          const customer = customers?.[0]
 
-          if (appointment) {
-            let newStatus = 'scheduled'
-            let replyMsg = ''
+          if (customer) {
+            const now = new Date()
+            const future = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-            if (buttonText === 'Confirmar') {
-              newStatus = 'confirmed'
-              replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
-            } else if (buttonText === 'Reprogramar') {
-              newStatus = 'scheduled'
-              replyMsg = 'Entendido ' + customer.full_name + ', nos pondremos en contacto contigo para reagendar tu cita. Que tengas un feliz dia!'
-            } else if (buttonText === 'Cancelar') {
-              newStatus = 'cancelled'
-              replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'
+            const { data: appointments } = await supabase
+              .from('appointments')
+              .select('id, title, scheduled_at')
+              .eq('customer_id', customer.id)
+              .in('status', ['scheduled', 'confirmed'])
+              .gte('scheduled_at', now.toISOString())
+              .lte('scheduled_at', future.toISOString())
+              .order('scheduled_at', { ascending: true })
+              .limit(1)
+
+            console.log('Appointments:', JSON.stringify(appointments))
+            const appointment = appointments?.[0]
+
+            if (appointment) {
+              let newStatus = null
+              let replyMsg = ''
+
+              if (buttonText === 'Confirmar') {
+                newStatus = 'confirmed'
+                replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
+              } else if (buttonText === 'Reprogramar') {
+                replyMsg = 'Entendido ' + customer.full_name + ', nos pondremos en contacto contigo para reagendar. Que tengas un feliz dia!'
+              } else if (buttonText === 'Cancelar') {
+                newStatus = 'cancelled'
+                replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'
+              }
+
+              if (newStatus) {
+                await supabase.from('appointments').update({ status: newStatus }).eq('id', appointment.id)
+              }
+
+              if (replyMsg) {
+                await sendWhatsApp(phone, replyMsg)
+              }
             }
-
-            if (newStatus !== 'scheduled' || buttonText === 'Reprogramar') {
-              await supabase
-                .from('appointments')
-                .update({ status: newStatus })
-                .eq('id', appointment.id)
-            }
-
-            await sendWhatsApp(phone, replyMsg)
           }
         }
       }
