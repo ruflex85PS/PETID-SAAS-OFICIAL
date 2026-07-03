@@ -25,7 +25,9 @@ export default function AppointmentsPage() {
   const [editingAppt, setEditingAppt] = useState(null)
   const [view, setView] = useState('week')
   const { organization, profile } = useAuth()
-  const isSuspended = !!(organization?.status === 'suspended' && !profile?.is_super_admin)
+  const orgStatus = organization?.status
+  const isAdmin = profile?.is_super_admin
+  const isSuspended = orgStatus === 'suspended' && isAdmin !== true
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 })
   const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 })
