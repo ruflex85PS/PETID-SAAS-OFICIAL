@@ -72,11 +72,9 @@ export default function AdminPage() {
             <div style={{color:'#6b7280',fontSize:'0.85rem'}}>Automatizaciones</div>
           </div>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:12}}>
-          <button onClick={() => navigate('/appointments')} style={{padding:16,borderRadius:10,border:'1px solid #e5e7eb',background:'white',cursor:'pointer',textAlign:'left',fontWeight:500}}>📅 Ver Agenda</button>
-          <button onClick={() => navigate('/customers')} style={{padding:16,borderRadius:10,border:'1px solid #e5e7eb',background:'white',cursor:'pointer',textAlign:'left',fontWeight:500}}>👥 Ver Clientes</button>
-          <button onClick={() => navigate('/automations')} style={{padding:16,borderRadius:10,border:'1px solid #e5e7eb',background:'white',cursor:'pointer',textAlign:'left',fontWeight:500}}>⚡ Ver Automatizaciones</button>
-          <button onClick={() => navigate('/pets')} style={{padding:16,borderRadius:10,border:'1px solid #e5e7eb',background:'white',cursor:'pointer',textAlign:'left',fontWeight:500}}>🐾 Ver Mascotas</button>
+        <div style={{background:'#f9fafb',borderRadius:10,padding:16,marginTop:8}}>
+          <p style={{color:'#6b7280',fontSize:'0.85rem',margin:0}}>📊 Esta cuenta tiene <strong>{orgStats[selectedOrg.id]?.citas || 0} citas</strong>, <strong>{orgStats[selectedOrg.id]?.clientes || 0} clientes</strong> y <strong>{orgStats[selectedOrg.id]?.autos || 0} automatizaciones</strong> registradas.</p>
+          <p style={{color:'#6b7280',fontSize:'0.85rem',marginTop:8}}>Para ver los detalles completos, inicia sesión directamente con las credenciales del cliente.</p>
         </div>
       </div>
     )
