@@ -25,7 +25,8 @@ export default function AppointmentsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingAppt, setEditingAppt] = useState(null)
   const [view, setView] = useState('week')
-  const { organization } = useAuth()
+  const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 })
   const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 })
@@ -83,7 +84,7 @@ export default function AppointmentsPage() {
               <Clock size={14} /> Semana
             </button>
           </div>
-          <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }}>
+          <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended}>
             <Plus size={16} /> Nueva Cita
           </button>
         </div>
@@ -128,7 +129,7 @@ export default function AppointmentsPage() {
                     </div>
                     <div className={styles.dayBody}>
                       {dayAppts.length === 0 ? (
-                        <div className={styles.emptyDay} onClick={() => { setEditingAppt({ defaultDate: day }); setShowModal(true) }}>
+                        <div className={styles.emptyDay} onClick={() => { if (!isSuspended) { setEditingAppt({ defaultDate: day }); setShowModal(true) } }}>
                           + agregar
                         </div>
                       ) : (
@@ -164,7 +165,7 @@ export default function AppointmentsPage() {
             <div className="empty-state">
               <h3>Sin citas hoy</h3>
               <p>No hay citas programadas para hoy.</p>
-              <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }}>
+              <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended}>
                 <Plus size={16} /> Agregar cita
               </button>
             </div>
