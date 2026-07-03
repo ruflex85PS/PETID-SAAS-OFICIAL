@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useOutletContext } from 'react-router-dom'
 import { Plus, ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, addDays } from 'date-fns'
 import { es } from 'date-fns/locale'
