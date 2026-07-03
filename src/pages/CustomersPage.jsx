@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, Trash2, Phone, Mail, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useSearchParams } from 'react-router-dom'
 import CustomerModal from '../components/clients/CustomerModal'
 
 export default function CustomersPage() {
@@ -15,6 +16,9 @@ export default function CustomersPage() {
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [deleting, setDeleting] = useState(null)
   const { organization, profile } = useAuth()
+  const [searchParams] = useSearchParams()
+  const orgId = searchParams.get('org') || organization?.id
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
   const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
   useEffect(() => { if (organization) loadCustomers() }, [organization])

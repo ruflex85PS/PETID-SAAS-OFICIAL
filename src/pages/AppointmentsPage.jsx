@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Plus, ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, addDays } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -24,6 +25,8 @@ export default function AppointmentsPage() {
   const [editingAppt, setEditingAppt] = useState(null)
   const [view, setView] = useState('week')
   const { organization } = useAuth()
+  const [searchParams] = useSearchParams()
+  const orgId = searchParams.get('org') || organization?.id
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 })
   const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 })

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, PawPrint } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useSearchParams } from 'react-router-dom'
 import PetModal from '../components/pets/PetModal'
 
 const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', reptile: '🦎', other: '🐾' }
@@ -15,6 +16,8 @@ export default function PetsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingPet, setEditingPet] = useState(null)
   const { organization } = useAuth()
+  const [searchParams] = useSearchParams()
+  const orgId = searchParams.get('org') || organization?.id
 
   useEffect(() => { if (organization) loadPets() }, [organization])
 
