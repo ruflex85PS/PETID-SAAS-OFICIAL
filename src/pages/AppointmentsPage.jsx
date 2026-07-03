@@ -17,7 +17,6 @@ const STATUS_COLOR = {
 }
 
 export default function AppointmentsPage() {
-  const { isSuspended } = useOutletContext() || {}
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
