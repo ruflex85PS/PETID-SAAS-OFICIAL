@@ -19,7 +19,6 @@ export default function CustomersPage() {
   const [searchParams] = useSearchParams()
   const orgId = searchParams.get('org') || organization?.id
   const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
-  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
   useEffect(() => { if (organization) loadCustomers() }, [organization])
 
