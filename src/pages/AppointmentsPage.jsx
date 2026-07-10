@@ -240,21 +240,29 @@ function StatusSelect({ value, onChange, compact }) {
     { value: 'rescheduled', label: 'Reprogramada' },
   ]
   return (
-    <select
-      value={value}
-      onChange={e => onChange(e.target.value)}
-      style={{
-        fontSize: compact ? '0.7rem' : '0.8rem',
-        padding: compact ? '2px 4px' : '4px 8px',
-        borderRadius: 4,
-        border: '1px solid var(--gray-200)',
-        background: 'white',
-        cursor: 'pointer',
-        color: 'var(--gray-700)',
-      }}
-      onClick={e => e.stopPropagation()}
-    >
-      {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }} onClick={e => e.stopPropagation()}>
+      <span style={{
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        background: STATUS_COLOR[value] || 'var(--gray-300)',
+        flexShrink: 0,
+      }} />
+      <select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        style={{
+          fontSize: compact ? '0.7rem' : '0.8rem',
+          padding: compact ? '2px 4px' : '4px 8px',
+          borderRadius: 4,
+          border: '1px solid var(--gray-200)',
+          background: 'white',
+          cursor: 'pointer',
+          color: 'var(--gray-700)',
+        }}
+      >
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </div>
   )
 }
