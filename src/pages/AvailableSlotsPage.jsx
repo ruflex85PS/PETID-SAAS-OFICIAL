@@ -20,7 +20,8 @@ function getUrgency(scheduledAt) {
 }
 
 export default function AvailableSlotsPage() {
-  const { organization } = useAuth()
+  const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
   const [slots, setSlots] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -86,7 +87,7 @@ export default function AvailableSlotsPage() {
           <button className="btn btn-secondary" onClick={load} disabled={loading}>
             <RefreshCw size={16} />
           </button>
-          <button className="btn btn-primary" onClick={handleNewAppointment}>
+          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
             <Plus size={16} />
             Nueva cita
           </button>
@@ -151,7 +152,7 @@ export default function AvailableSlotsPage() {
             ¡Excelente! No tienes citas canceladas con horario futuro.
             Cuando se cancele una cita, aparecerá aquí para que puedas reasignarla.
           </p>
-          <button className="btn btn-primary" onClick={handleNewAppointment}>
+          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
             <Plus size={16} />
             Crear nueva cita
           </button>

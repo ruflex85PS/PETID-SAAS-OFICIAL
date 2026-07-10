@@ -113,7 +113,7 @@ export default function PetsPage() {
                   <Link to={`/pets/${pet.id}`} className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                     Ver perfil
                   </Link>
-                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditingPet(pet); setShowModal(true) }}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditingPet(pet); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
                     <Edit2 size={13} />
                   </button>
                 </div>

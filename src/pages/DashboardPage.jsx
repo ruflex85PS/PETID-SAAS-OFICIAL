@@ -12,6 +12,7 @@ import styles from './DashboardPage.module.css'
 
 export default function DashboardPage() {
   const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
   const [stats, setStats] = useState(null)
   const [todayAppts, setTodayAppts] = useState([])
   const [upcomingAppts, setUpcomingAppts] = useState([])
@@ -105,9 +106,15 @@ export default function DashboardPage() {
           <div className="page-title">{greeting()}, {profile?.full_name?.split(' ')[0] || 'bienvenido'} 👋</div>
           <div className="page-subtitle">{format(new Date(), "EEEE, d 'de' MMMM yyyy", { locale: es })}</div>
         </div>
-        <Link to="/appointments" className="btn btn-primary">
-          <Calendar size={16} /> Nueva cita
-        </Link>
+        {isSuspended ? (
+          <span className="btn btn-primary" style={{ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' }} title="Cuenta suspendida">
+            <Calendar size={16} /> Nueva cita
+          </span>
+        ) : (
+          <Link to="/appointments" className="btn btn-primary">
+            <Calendar size={16} /> Nueva cita
+          </Link>
+        )}
       </div>
 
       {/* Stat cards */}
@@ -133,7 +140,7 @@ export default function DashboardPage() {
             {todayAppts.length === 0 ? (
               <div className="empty-state" style={{ padding: '32px 20px' }}>
                 <p>No hay citas programadas para hoy</p>
-                <Link to="/appointments" className="btn btn-primary btn-sm">Agregar cita</Link>
+                {isSuspended ? <span className="btn btn-primary btn-sm" style={{ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' }} title="Cuenta suspendida">Agregar cita</span> : <Link to="/appointments" className="btn btn-primary btn-sm">Agregar cita</Link>}
               </div>
             ) : (
               <div className={styles.appointmentList}>

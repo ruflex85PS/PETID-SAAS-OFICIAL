@@ -152,7 +152,7 @@ export default function CustomersPage() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="btn btn-ghost btn-icon" title="Editar" onClick={() => openEdit(c)}>
+                        <button className="btn btn-ghost btn-icon" title={isSuspended ? "Cuenta suspendida" : "Editar"} onClick={() => openEdit(c)} disabled={isSuspended}>
                           <Edit2 size={15} />
                         </button>
                         <button

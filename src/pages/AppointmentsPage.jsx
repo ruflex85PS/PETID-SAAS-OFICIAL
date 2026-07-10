@@ -138,7 +138,7 @@ export default function AppointmentsPage() {
                     </div>
                     <div className={styles.dayBody}>
                       {dayAppts.length === 0 ? (
-                        <div className={styles.emptyDay} onClick={() => { { setEditingAppt({ defaultDate: day }); setShowModal(true) } }}>
+                        <div className={styles.emptyDay} onClick={() => { if (!isSuspended) { setEditingAppt({ defaultDate: day }); setShowModal(true) } }} style={isSuspended ? { opacity: 0.4, cursor: 'not-allowed' } : {}} title={isSuspended ? "Cuenta suspendida" : ""}>
                           + agregar
                         </div>
                       ) : (
