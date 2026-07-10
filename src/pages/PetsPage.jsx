@@ -15,10 +15,11 @@ export default function PetsPage() {
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingPet, setEditingPet] = useState(null)
-  const { organization } = useAuth()
+  const { organization, profile } = useAuth()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const orgId = searchParams.get('org') || organization?.id
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
   useEffect(() => { if (orgId) loadPets() }, [orgId])
 
@@ -55,7 +56,7 @@ export default function PetsPage() {
           <div className="page-title">Mascotas</div>
           <div className="page-subtitle">{pets.length} mascotas registradas</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditingPet(null); setShowModal(true) }}>
+        <button className="btn btn-primary" onClick={() => { setEditingPet(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
           <Plus size={16} /> Nueva Mascota
         </button>
       </div>
