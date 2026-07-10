@@ -19,13 +19,14 @@ export default function PetsPage() {
   const [searchParams] = useSearchParams()
   const orgId = searchParams.get('org') || organization?.id
 
-  useEffect(() => { if (organization) loadPets() }, [organization])
+  useEffect(() => { if (orgId) loadPets() }, [orgId])
 
   async function loadPets() {
     setLoading(true)
     const { data } = await supabase
       .from('pets')
       .select('*, customers(full_name), vaccines(id, next_due_date)')
+      .eq('organization_id', orgId)
       .order('name')
     setPets(data || [])
     setLoading(false)

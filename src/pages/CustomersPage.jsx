@@ -20,13 +20,14 @@ export default function CustomersPage() {
   const orgId = searchParams.get('org') || organization?.id
   const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
-  useEffect(() => { if (organization) loadCustomers() }, [organization])
+  useEffect(() => { if (orgId) loadCustomers() }, [orgId])
 
   async function loadCustomers() {
     setLoading(true)
     const { data } = await supabase
       .from('customers')
       .select('*, pets(id)')
+      .eq('organization_id', orgId)
       .order('full_name')
     setCustomers(data || [])
     setLoading(false)

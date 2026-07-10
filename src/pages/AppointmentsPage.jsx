@@ -33,7 +33,7 @@ export default function AppointmentsPage() {
   const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 })
   const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd })
 
-  useEffect(() => { if (organization) loadAppointments() }, [organization, currentWeek, view])
+  useEffect(() => { if (orgId) loadAppointments() }, [orgId, currentWeek, view])
 
   async function loadAppointments() {
     setLoading(true)
@@ -49,6 +49,7 @@ export default function AppointmentsPage() {
     const { data } = await supabase
       .from('appointments')
       .select('*, customers(full_name), pets(name), services(name, color, duration_minutes)')
+      .eq('organization_id', orgId)
       .gte('scheduled_at', start)
       .lte('scheduled_at', end)
       .order('scheduled_at')
