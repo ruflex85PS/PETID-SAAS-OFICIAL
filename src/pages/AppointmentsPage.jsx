@@ -15,6 +15,7 @@ const STATUS_COLOR = {
   completed: '#9CA3AF',
   cancelled: '#EF4444',
   no_show: '#D97706',
+  rescheduled: '#7C3AED',
 }
 
 export default function AppointmentsPage() {
@@ -236,6 +237,7 @@ function StatusSelect({ value, onChange, compact }) {
     { value: 'completed', label: 'Completada' },
     { value: 'cancelled', label: 'Cancelada' },
     { value: 'no_show', label: 'No asistió' },
+    { value: 'rescheduled', label: 'Reprogramada' },
   ]
   return (
     <select

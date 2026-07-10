@@ -87,6 +87,7 @@ export default async function handler(req, res) {
                 newStatus = 'confirmed'
                 replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
               } else if (buttonText === 'Reprogramar') {
+                newStatus = 'rescheduled'
                 replyMsg = 'Entendido ' + customer.full_name + ', nos pondremos en contacto contigo para reagendar. Que tengas un feliz dia!'
               } else if (buttonText === 'Cancelar') {
                 newStatus = 'cancelled'
