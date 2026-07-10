@@ -87,7 +87,7 @@ export default function AvailableSlotsPage() {
           <button className="btn btn-secondary" onClick={load} disabled={loading}>
             <RefreshCw size={16} />
           </button>
-          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
             <Plus size={16} />
             Nueva cita
           </button>
@@ -152,7 +152,7 @@ export default function AvailableSlotsPage() {
             ¡Excelente! No tienes citas canceladas con horario futuro.
             Cuando se cancele una cita, aparecerá aquí para que puedas reasignarla.
           </p>
-          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+          <button className="btn btn-primary" onClick={handleNewAppointment} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
             <Plus size={16} />
             Crear nueva cita
           </button>

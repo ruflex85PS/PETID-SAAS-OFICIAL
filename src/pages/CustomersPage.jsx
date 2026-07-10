@@ -64,7 +64,7 @@ export default function CustomersPage() {
           <div className="page-title">Clientes</div>
           <div className="page-subtitle">{customers.length} clientes registrados</div>
         </div>
-        <button className="btn btn-primary" onClick={openCreate} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+        <button className="btn btn-primary" onClick={openCreate} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
           <Plus size={16} /> Nuevo Cliente
         </button>
       </div>
@@ -152,7 +152,7 @@ export default function CustomersPage() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button className="btn btn-ghost btn-icon" title={isSuspended ? "Cuenta suspendida" : "Editar"} onClick={() => openEdit(c)} disabled={isSuspended}>
+                        <button className="btn btn-ghost btn-icon" title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : "Editar"} onClick={() => openEdit(c)} disabled={isSuspended}>
                           <Edit2 size={15} />
                         </button>
                         <button

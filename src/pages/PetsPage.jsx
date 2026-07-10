@@ -56,7 +56,7 @@ export default function PetsPage() {
           <div className="page-title">Mascotas</div>
           <div className="page-subtitle">{pets.length} mascotas registradas</div>
         </div>
-        <button className="btn btn-primary" onClick={() => { setEditingPet(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+        <button className="btn btn-primary" onClick={() => { setEditingPet(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
           <Plus size={16} /> Nueva Mascota
         </button>
       </div>
@@ -113,7 +113,7 @@ export default function PetsPage() {
                   <Link to={`/pets/${pet.id}`} className="btn btn-secondary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                     Ver perfil
                   </Link>
-                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditingPet(pet); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+                  <button className="btn btn-ghost btn-sm" onClick={() => { setEditingPet(pet); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
                     <Edit2 size={13} />
                   </button>
                 </div>

@@ -8,12 +8,15 @@ import PetModal from '../components/pets/PetModal'
 import MedicalRecordModal from '../components/medical/MedicalRecordModal'
 import VaccineModal from '../components/medical/VaccineModal'
 import DewormingModal from '../components/medical/DewormingModal'
+import { useAuth } from '../context/AuthContext'
 
 const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', reptile: '🦎', other: '🐾' }
 
 export default function PetDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { organization, profile } = useAuth()
+  const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
   const [pet, setPet] = useState(null)
   const [medicalRecords, setMedicalRecords] = useState([])
   const [vaccines, setVaccines] = useState([])
@@ -63,7 +66,7 @@ export default function PetDetailPage() {
             Propietario: <Link to={`/customers/${pet.customers?.id}`}>{pet.customers?.full_name}</Link>
           </p>
         </div>
-        <button className="btn btn-secondary" onClick={() => setModal('edit')}><Edit2 size={14} /> Editar</button>
+        <button className="btn btn-secondary" onClick={() => setModal('edit')} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}><Edit2 size={14} /> Editar</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>

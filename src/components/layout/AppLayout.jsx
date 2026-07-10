@@ -125,7 +125,7 @@ export default function AppLayout() {
             <span style={{fontSize:'1.2rem'}}>🔒</span>
             <div>
               <strong style={{color:'#dc2626'}}>Cuenta suspendida</strong>
-              <span style={{color:'#7f1d1d',marginLeft:8,fontSize:'0.9rem'}}>Tu cuenta está suspendida por falta de pago. Comunícate con PETID Admin para reactivarla.</span>
+              <span style={{color:'#7f1d1d',marginLeft:8,fontSize:'0.9rem'}}>Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla.</span>
             </div>
           </div>
         )}

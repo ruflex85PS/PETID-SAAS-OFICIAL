@@ -93,7 +93,7 @@ export default function AppointmentsPage() {
               <Clock size={14} /> Semana
             </button>
           </div>
-          <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+          <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
             <Plus size={16} /> Nueva Cita
           </button>
         </div>
@@ -138,7 +138,7 @@ export default function AppointmentsPage() {
                     </div>
                     <div className={styles.dayBody}>
                       {dayAppts.length === 0 ? (
-                        <div className={styles.emptyDay} onClick={() => { if (!isSuspended) { setEditingAppt({ defaultDate: day }); setShowModal(true) } }} style={isSuspended ? { opacity: 0.4, cursor: 'not-allowed' } : {}} title={isSuspended ? "Cuenta suspendida" : ""}>
+                        <div className={styles.emptyDay} onClick={() => { if (!isSuspended) { setEditingAppt({ defaultDate: day }); setShowModal(true) } }} style={isSuspended ? { opacity: 0.4, cursor: 'not-allowed' } : {}} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
                           + agregar
                         </div>
                       ) : (
@@ -174,7 +174,7 @@ export default function AppointmentsPage() {
             <div className="empty-state">
               <h3>Sin citas hoy</h3>
               <p>No hay citas programadas para hoy.</p>
-              <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida" : ""}>
+              <button className="btn btn-primary" onClick={() => { setEditingAppt(null); setShowModal(true) }} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}>
                 <Plus size={16} /> Agregar cita
               </button>
             </div>
