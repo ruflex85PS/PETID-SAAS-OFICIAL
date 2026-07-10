@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
             const { data: appointments } = await supabase
               .from('appointments')
-              .select('id, title, scheduled_at')
+              .select('id, title, scheduled_at, pets(name)')
               .eq('customer_id', customer.id)
               .in('status', ['scheduled', 'confirmed'])
               .gte('scheduled_at', now.toISOString())
@@ -88,7 +88,15 @@ export default async function handler(req, res) {
                 replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
               } else if (buttonText === 'Reprogramar') {
                 newStatus = 'rescheduled'
-                replyMsg = 'Entendido ' + customer.full_name + ', nos pondremos en contacto contigo para reagendar. Que tengas un feliz dia!'
+                const { data: rescheduleTemplate } = await supabase
+                  .from('whatsapp_templates')
+                  .select('message')
+                  .eq('template_type', 'reschedule_reply')
+                  .single()
+                const petName = appointment.pets?.name || 'tu mascota'
+                replyMsg = (rescheduleTemplate?.message || 'Listo {nombre}, nos comunicaremos contigo para reprogramar la cita de {mascota}. Que tengas un feliz dia!')
+                  .replace('{nombre}', customer.full_name)
+                  .replace('{mascota}', petName)
               } else if (buttonText === 'Cancelar') {
                 newStatus = 'cancelled'
                 replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'

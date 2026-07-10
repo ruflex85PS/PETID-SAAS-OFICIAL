@@ -3,8 +3,8 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
 import { Save } from 'lucide-react'
 
-const ICONS = { confirmation_request: '✅', reminder_24h: '⏰', followup_postconsult: '🔍', slot_recovery: '❌' }
-const VARIABLES = { confirmation_request: ['{nombre}','{negocio}','{fecha}','{hora}','{servicio}'], reminder_24h: ['{nombre}','{negocio}','{hora}','{servicio}'], followup_postconsult: ['{nombre}','{mascota}','{servicio}'], slot_recovery: ['{nombre}','{fecha}','{hora}','{negocio}'] }
+const ICONS = { confirmation_request: '✅', reminder_24h: '⏰', followup_postconsult: '🔍', slot_recovery: '❌', reschedule_reply: '🔄' }
+const VARIABLES = { confirmation_request: ['{nombre}','{negocio}','{fecha}','{hora}','{servicio}'], reminder_24h: ['{nombre}','{negocio}','{hora}','{servicio}'], followup_postconsult: ['{nombre}','{mascota}','{servicio}'], slot_recovery: ['{nombre}','{fecha}','{hora}','{negocio}'], reschedule_reply: ['{nombre}','{mascota}'] }
 
 export default function TemplatesPage() {
   const { profile } = useAuth()
