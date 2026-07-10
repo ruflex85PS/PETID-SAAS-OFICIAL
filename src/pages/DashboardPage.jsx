@@ -42,30 +42,30 @@ export default function DashboardPage() {
         { data: vaccineData },
         { data: cancelledSlots },
       ] = await Promise.all([
-        supabase.from('customers').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-        supabase.from('pets').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-        supabase.from('appointments').select('*', { count: 'exact', head: true }),
-        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'confirmed'),
-        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
+        supabase.from('customers').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('organization_id', organization.id),
+        supabase.from('pets').select('*', { count: 'exact', head: true }).eq('status', 'active').eq('organization_id', organization.id),
+        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('organization_id', organization.id),
+        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'confirmed').eq('organization_id', organization.id),
+        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'cancelled').eq('organization_id', organization.id),
         supabase.from('appointments').select(`
           id, title, scheduled_at, status, duration_minutes,
           customers(full_name), pets(name), services(name, color)
-        `).gte('scheduled_at', todayStart).lte('scheduled_at', todayEnd)
+        `).eq('organization_id', organization.id).gte('scheduled_at', todayStart).lte('scheduled_at', todayEnd)
           .order('scheduled_at'),
         supabase.from('appointments').select(`
           id, title, scheduled_at, status, duration_minutes,
           customers(full_name), pets(name), services(name, color)
-        `).gt('scheduled_at', todayEnd).lte('scheduled_at', nextWeek)
+        `).eq('organization_id', organization.id).gt('scheduled_at', todayEnd).lte('scheduled_at', nextWeek)
           .in('status', ['scheduled', 'confirmed'])
           .order('scheduled_at').limit(5),
         supabase.from('vaccines').select(`
           id, vaccine_name, next_due_date, pets(name, customers(full_name))
-        `).lte('next_due_date', addDays(now, 30).toISOString().split('T')[0])
+        `).eq('organization_id', organization.id).lte('next_due_date', addDays(now, 30).toISOString().split('T')[0])
           .order('next_due_date').limit(5),
         supabase.from('appointments').select(`
           id, title, scheduled_at, duration_minutes, cancellation_reason,
           customers(full_name), services(name)
-        `).eq('status', 'cancelled').gte('scheduled_at', now.toISOString())
+        `).eq('status', 'cancelled').eq('organization_id', organization.id).gte('scheduled_at', now.toISOString())
           .order('scheduled_at').limit(4),
       ])
 
