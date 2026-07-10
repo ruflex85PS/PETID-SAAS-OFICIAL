@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Plus, ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, addWeeks, subWeeks, isToday, addDays } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -27,6 +27,7 @@ export default function AppointmentsPage() {
   const [view, setView] = useState('week')
   const { organization } = useAuth()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const orgId = searchParams.get('org') || organization?.id
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 })
@@ -68,6 +69,11 @@ export default function AppointmentsPage() {
 
   return (
     <div>
+      {searchParams.get('org') && (
+        <button onClick={() => navigate('/admin?org=' + searchParams.get('org'))} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4,padding:0}}>
+          ← Volver a la cuenta
+        </button>
+      )}
       <div className="page-header">
         <div>
           <div className="page-title">Agenda</div>

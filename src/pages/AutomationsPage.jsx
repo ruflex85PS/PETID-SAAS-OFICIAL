@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Bell, Clock, CheckCircle, XCircle, AlertCircle, RefreshCw, Dog, Syringe, Calendar, Send } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
@@ -23,6 +24,9 @@ const STATUS_CONFIG = {
 
 export default function AutomationsPage() {
   const { organization } = useAuth()
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const orgId = searchParams.get('org') || organization?.id
   const [automations, setAutomations] = useState([])
   const [stats, setStats] = useState({ pending: 0, sent: 0, failed: 0, cancelled: 0, total: 0 })
   const [loading, setLoading] = useState(true)
@@ -33,10 +37,12 @@ export default function AutomationsPage() {
   const [retrying, setRetrying] = useState(null)
 
   const load = useCallback(async () => {
+    if (!orgId) return
     setLoading(true)
     const { data } = await supabase
       .from('automations')
       .select("*")
+      .eq('organization_id', orgId)
       .order('scheduled_for', { ascending: false })
       .limit(200)
 
@@ -47,7 +53,7 @@ export default function AutomationsPage() {
       setStats(s)
     }
     setLoading(false)
-  }, [])
+  }, [orgId])
 
   useEffect(() => { load() }, [load])
 
@@ -84,6 +90,11 @@ export default function AutomationsPage() {
 
   return (
     <div style={{ padding: '24px', maxWidth: 1100, margin: '0 auto' }}>
+      {searchParams.get('org') && (
+        <button onClick={() => navigate('/admin?org=' + searchParams.get('org'))} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4,padding:0}}>
+          ← Volver a la cuenta
+        </button>
+      )}
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>

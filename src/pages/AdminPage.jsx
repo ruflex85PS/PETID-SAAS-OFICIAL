@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export default function AdminPage() {
   const { profile } = useAuth()
@@ -12,8 +12,17 @@ export default function AdminPage() {
   const [selectedOrg, setSelectedOrg] = useState(null)
   const [orgStats, setOrgStats] = useState({})
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   useEffect(() => { if (isSuperAdmin) loadOrgs() }, [isSuperAdmin])
+
+  useEffect(() => {
+    const orgIdFromUrl = searchParams.get('org')
+    if (orgIdFromUrl && orgs.length > 0) {
+      const found = orgs.find(o => o.id === orgIdFromUrl)
+      if (found) setSelectedOrg(found)
+    }
+  }, [orgs, searchParams])
 
   async function loadOrgs() {
     const { data } = await supabase.from('organizations').select('*').order('created_at', { ascending: false })
@@ -48,7 +57,7 @@ export default function AdminPage() {
     const stats = orgStats[selectedOrg.id] || {}
     return (
       <div style={{padding:24,maxWidth:1000,margin:'0 auto'}}>
-        <button onClick={() => setSelectedOrg(null)} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4}}>
+        <button onClick={() => { setSelectedOrg(null); setSearchParams({}) }} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4}}>
           ← Volver al panel
         </button>
         <div style={{background:'white',borderRadius:12,padding:24,border:'1px solid #e5e7eb',marginBottom:20}}>
@@ -104,7 +113,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                <button onClick={() => setSelectedOrg(org)} style={{padding:'8px 16px',borderRadius:8,border:'1px solid #3b82f6',cursor:'pointer',fontWeight:600,fontSize:'0.85rem',background:'white',color:'#3b82f6'}}>
+                <button onClick={() => { setSelectedOrg(org); setSearchParams({ org: org.id }) }} style={{padding:'8px 16px',borderRadius:8,border:'1px solid #3b82f6',cursor:'pointer',fontWeight:600,fontSize:'0.85rem',background:'white',color:'#3b82f6'}}>
                   Ver cuenta
                 </button>
                 <button onClick={() => toggleStatus(org)} disabled={updating === org.id} style={{padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',fontWeight:600,fontSize:'0.85rem',background:org.status==='active'?'#fee2e2':'#dcfce7',color:org.status==='active'?'#dc2626':'#16a34a'}}>

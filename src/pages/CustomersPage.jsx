@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, Trash2, Phone, Mail, User } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import CustomerModal from '../components/clients/CustomerModal'
 
 export default function CustomersPage() {
@@ -17,6 +17,7 @@ export default function CustomersPage() {
   const [deleting, setDeleting] = useState(null)
   const { organization, profile } = useAuth()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const orgId = searchParams.get('org') || organization?.id
   const isSuspended = organization?.status === 'suspended' && !profile?.is_super_admin
 
@@ -53,6 +54,11 @@ export default function CustomersPage() {
 
   return (
     <div>
+      {searchParams.get('org') && (
+        <button onClick={() => navigate('/admin?org=' + searchParams.get('org'))} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4,padding:0}}>
+          ← Volver a la cuenta
+        </button>
+      )}
       <div className="page-header">
         <div>
           <div className="page-title">Clientes</div>

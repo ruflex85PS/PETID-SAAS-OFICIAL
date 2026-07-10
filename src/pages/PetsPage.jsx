@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Plus, Search, Edit2, PawPrint } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import PetModal from '../components/pets/PetModal'
 
 const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', reptile: '🦎', other: '🐾' }
@@ -17,6 +17,7 @@ export default function PetsPage() {
   const [editingPet, setEditingPet] = useState(null)
   const { organization } = useAuth()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const orgId = searchParams.get('org') || organization?.id
 
   useEffect(() => { if (orgId) loadPets() }, [orgId])
@@ -44,6 +45,11 @@ export default function PetsPage() {
 
   return (
     <div>
+      {searchParams.get('org') && (
+        <button onClick={() => navigate('/admin?org=' + searchParams.get('org'))} style={{background:'none',border:'none',color:'#3b82f6',cursor:'pointer',fontSize:'0.9rem',marginBottom:16,display:'flex',alignItems:'center',gap:4,padding:0}}>
+          ← Volver a la cuenta
+        </button>
+      )}
       <div className="page-header">
         <div>
           <div className="page-title">Mascotas</div>
