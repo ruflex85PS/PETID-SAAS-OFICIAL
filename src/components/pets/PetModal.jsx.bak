@@ -1,15 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
-import { X, Save, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Save } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 
 export default function PetModal({ pet, customerId, onClose, onSaved }) {
   const { organization } = useAuth()
   const [customers, setCustomers] = useState([])
-  const [customerSearch, setCustomerSearch] = useState('')
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef(null)
-
   const [form, setForm] = useState({
     name: pet?.name || '',
     species: pet?.species || 'dog',
@@ -29,43 +25,12 @@ export default function PetModal({ pet, customerId, onClose, onSaved }) {
     if (!customerId) loadCustomers()
   }, [])
 
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
   async function loadCustomers() {
     const { data } = await supabase.from('customers').select('id, full_name').eq('status', 'active').order('full_name')
     setCustomers(data || [])
-
-    if (form.customer_id) {
-      const selected = (data || []).find(c => c.id === form.customer_id)
-      if (selected) setCustomerSearch(selected.full_name)
-    }
   }
 
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }))
-
-  function selectCustomer(c) {
-    set('customer_id', c.id)
-    setCustomerSearch(c.full_name)
-    setShowDropdown(false)
-  }
-
-  function handleSearchChange(val) {
-    setCustomerSearch(val)
-    setShowDropdown(true)
-    if (!val) set('customer_id', '')
-  }
-
-  const filteredCustomers = customerSearch
-    ? customers.filter(c => c.full_name.toLowerCase().includes(customerSearch.toLowerCase()))
-    : customers
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -104,60 +69,12 @@ export default function PetModal({ pet, customerId, onClose, onSaved }) {
             {error && <div className="alert alert-danger" style={{ marginBottom: 16 }}>{error}</div>}
 
             {!customerId && (
-              <div className="form-group" ref={dropdownRef} style={{ position: 'relative' }}>
+              <div className="form-group">
                 <label>Propietario *</label>
-                <div style={{ position: 'relative' }}>
-                  <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }} />
-                  <input
-                    type="text"
-                    className="form-control"
-                    style={{ paddingLeft: 34 }}
-                    placeholder="Buscar propietario por nombre…"
-                    value={customerSearch}
-                    onChange={e => handleSearchChange(e.target.value)}
-                    onFocus={() => setShowDropdown(true)}
-                    autoComplete="off"
-                  />
-                </div>
-
-                {showDropdown && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    zIndex: 20,
-                    background: 'white',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 8,
-                    marginTop: 4,
-                    maxHeight: 220,
-                    overflowY: 'auto',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }}>
-                    {filteredCustomers.length === 0 && (
-                      <div style={{ padding: '10px 14px', color: '#94a3b8', fontSize: 14 }}>
-                        No se encontraron clientes
-                      </div>
-                    )}
-                    {filteredCustomers.map(c => (
-                      <div
-                        key={c.id}
-                        onClick={() => selectCustomer(c)}
-                        style={{
-                          padding: '10px 14px',
-                          cursor: 'pointer',
-                          fontSize: 14,
-                          background: form.customer_id === c.id ? '#f1f5f9' : 'white',
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
-                        onMouseLeave={e => e.currentTarget.style.background = form.customer_id === c.id ? '#f1f5f9' : 'white'}
-                      >
-                        {c.full_name}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <select className="form-control" value={form.customer_id} onChange={e => set('customer_id', e.target.value)} required>
+                  <option value="">Seleccionar propietario…</option>
+                  {customers.map(c => <option key={c.id} value={c.id}>{c.full_name}</option>)}
+                </select>
               </div>
             )}
 
