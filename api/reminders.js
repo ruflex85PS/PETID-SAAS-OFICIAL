@@ -1,51 +1,99 @@
 import { createClient } from '@supabase/supabase-js'
-
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
   process.env.VITE_SUPABASE_ANON_KEY
 )
 
-async function sendWhatsApp(to, message) {
+async function sendWhatsAppTemplate(to, templateName, params) {
   const token = process.env.VITE_WHATSAPP_TOKEN
   const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
   const cleanPhone = to.replace(/\D/g, '')
   const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
-  
-  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+
+  const res = await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       messaging_product: 'whatsapp',
       to: phone,
-      type: 'text',
-      text: { body: message }
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: 'es' },
+        components: [{ type: 'body', parameters: params.map(p => ({ type: 'text', text: p })) }]
+      }
     })
+  })
+  return res.json()
+}
+
+async function sendWhatsAppText(to, message) {
+  const token = process.env.VITE_WHATSAPP_TOKEN
+  const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
+  const cleanPhone = to.replace(/\D/g, '')
+  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+
+  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: message } })
   })
 }
 
 export default async function handler(req, res) {
   const now = new Date()
-  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-  const in30min = new Date(now.getTime() + 30 * 60 * 1000)
 
-  const from24 = new Date(in24h.getTime() - 15 * 60 * 1000).toISOString()
-  const to24 = new Date(in24h.getTime() + 15 * 60 * 1000).toISOString()
-  const from30 = new Date(in30min.getTime() - 5 * 60 * 1000).toISOString()
-  const to30 = new Date(in30min.getTime() + 5 * 60 * 1000).toISOString()
+  // --- Recordatorio 24h: todas las citas de "mañana" (dia completo) ---
+  const tomorrowStart = new Date(now)
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1)
+  tomorrowStart.setHours(0, 0, 0, 0)
+
+  const tomorrowEnd = new Date(tomorrowStart)
+  tomorrowEnd.setHours(23, 59, 59, 999)
 
   const { data: citas24 } = await supabase
     .from('appointments')
     .select('*, customers(full_name, phone), services(name), organizations(name)')
     .eq('status', 'scheduled')
-    .gte('scheduled_at', from24)
-    .lte('scheduled_at', to24)
+    .eq('reminder_24h_sent', false)
+    .gte('scheduled_at', tomorrowStart.toISOString())
+    .lte('scheduled_at', tomorrowEnd.toISOString())
 
+  let enviados24 = 0
   for (const cita of citas24 || []) {
     if (!cita.customers?.phone) continue
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
-    const msg = 'Hola ' + cita.customers.full_name + ', te recordamos que manana tienes cita en ' + cita.organizations.name + ' a las ' + hora + '. Servicio: ' + (cita.services?.name || cita.title) + '. Te esperamos!'
-    await sendWhatsApp(cita.customers.phone, msg)
+
+    const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24h', [
+      cita.customers.full_name,
+      cita.organizations.name,
+      hora,
+      cita.services?.name || cita.title
+    ])
+
+    await supabase.from('appointments').update({ reminder_24h_sent: true }).eq('id', cita.id)
+
+    await supabase.from('automations').insert([{
+      organization_id: cita.organization_id,
+      automation_type: 'reminder_24h',
+      reference_id: cita.id,
+      reference_type: 'appointment',
+      customer_id: cita.customer_id,
+      channel: 'whatsapp',
+      message_preview: 'Recordatorio 24h para ' + cita.customers.full_name,
+      status: result?.messages ? 'sent' : 'failed',
+      scheduled_for: new Date().toISOString(),
+      sent_at: new Date().toISOString(),
+      error_message: result?.error?.message || null
+    }])
+
+    enviados24++
   }
+
+  // --- Recordatorio 30 minutos (se mantiene igual que antes) ---
+  const in30min = new Date(now.getTime() + 30 * 60 * 1000)
+  const from30 = new Date(in30min.getTime() - 5 * 60 * 1000).toISOString()
+  const to30 = new Date(in30min.getTime() + 5 * 60 * 1000).toISOString()
 
   const { data: citas30 } = await supabase
     .from('appointments')
@@ -58,12 +106,12 @@ export default async function handler(req, res) {
     if (!cita.customers?.phone) continue
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
     const msg = 'Hola ' + cita.customers.full_name + ', tu cita en ' + cita.organizations.name + ' es en 30 minutos a las ' + hora + '. Te esperamos!'
-    await sendWhatsApp(cita.customers.phone, msg)
+    await sendWhatsAppText(cita.customers.phone, msg)
   }
 
-  return res.status(200).json({ 
-    ok: true, 
-    recordatorios24h: citas24?.length || 0,
+  return res.status(200).json({
+    ok: true,
+    recordatorios24h: enviados24,
     recordatorios30min: citas30?.length || 0
   })
 }
