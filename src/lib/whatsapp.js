@@ -3,7 +3,7 @@ const PHONE_ID = import.meta.env.VITE_WHATSAPP_PHONE_ID
 
 export async function sendAppointmentConfirmation(to, params) {
   if (!WHATSAPP_TOKEN || !PHONE_ID) { console.warn("WhatsApp missing"); return null }
-  let cleanPhone = to.replace(/D/g, "")
+  let cleanPhone = to.replace(/\D/g, "")
   if (cleanPhone.startsWith("0")) { cleanPhone = "593" + cleanPhone.slice(1) }
   const { customerName, businessName, fecha, hora, serviceName } = params
   try {
