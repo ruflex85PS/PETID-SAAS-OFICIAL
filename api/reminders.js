@@ -40,16 +40,32 @@ async function sendWhatsAppText(to, message) {
   })
 }
 
+// Ecuador es UTC-5 todo el año (sin horario de verano)
+const ECUADOR_OFFSET_MS = 5 * 60 * 60 * 1000
+
+// Calcula el rango "mañana 00:00 a 23:59, hora Ecuador" y lo devuelve
+// como instantes UTC correctos para comparar contra scheduled_at (que está en UTC)
+function getTomorrowRangeEcuador(now) {
+  const ecuadorShifted = new Date(now.getTime() - ECUADOR_OFFSET_MS)
+
+  const tomorrow = new Date(ecuadorShifted)
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+  tomorrow.setUTCHours(0, 0, 0, 0)
+
+  const tomorrowEndShifted = new Date(tomorrow)
+  tomorrowEndShifted.setUTCHours(23, 59, 59, 999)
+
+  return {
+    tomorrowStart: new Date(tomorrow.getTime() + ECUADOR_OFFSET_MS),
+    tomorrowEnd: new Date(tomorrowEndShifted.getTime() + ECUADOR_OFFSET_MS)
+  }
+}
+
 export default async function handler(req, res) {
   const now = new Date()
 
-  // --- Recordatorio 24h: todas las citas de "mañana" (dia completo) ---
-  const tomorrowStart = new Date(now)
-  tomorrowStart.setDate(tomorrowStart.getDate() + 1)
-  tomorrowStart.setHours(0, 0, 0, 0)
-
-  const tomorrowEnd = new Date(tomorrowStart)
-  tomorrowEnd.setHours(23, 59, 59, 999)
+  // --- Recordatorio 24h: todas las citas de "mañana" (dia completo, hora Ecuador) ---
+  const { tomorrowStart, tomorrowEnd } = getTomorrowRangeEcuador(now)
 
   const { data: citas24 } = await supabase
     .from('appointments')
