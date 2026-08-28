@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { realtime: { transport: ws } }
 )
 
 async function sendWhatsAppTemplate(to, templateName, params) {
@@ -80,7 +82,7 @@ export default async function handler(req, res) {
     if (!cita.customers?.phone) continue
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
 
-    const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24h', [
+    const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24_hrs_antes', [
       cita.customers.full_name,
       cita.organizations.name,
       hora,
