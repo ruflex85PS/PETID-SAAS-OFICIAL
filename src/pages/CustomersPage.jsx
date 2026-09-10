@@ -39,7 +39,13 @@ export default function CustomersPage() {
     setDeleting(id)
     const { error } = await supabase.from('customers').delete().eq('id', id)
     if (error) {
-      alert("No se puede eliminar este cliente porque tiene citas o mascotas registradas en el sistema. Primero elimina sus registros asociados.")
+      if (confirm("Este cliente tiene citas ocultas en el calendario u otros registros que bloquean su eliminación.\n\n¿Deseas FORZAR el borrado? Esto destruirá permanentemente todas las citas y mascotas de este cliente.")) {
+        await supabase.from('appointments').delete().eq('customer_id', id)
+        await supabase.from('pets').delete().eq('customer_id', id)
+        await supabase.from('automations').delete().eq('customer_id', id)
+        await supabase.from('customers').delete().eq('id', id)
+        setCustomers(prev => prev.filter(c => c.id !== id))
+      }
     } else {
       setCustomers(prev => prev.filter(c => c.id !== id))
     }

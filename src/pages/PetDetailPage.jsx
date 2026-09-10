@@ -44,13 +44,6 @@ export default function PetDetailPage() {
   async function handleDeletePet() {
     if (!confirm('¿Eliminar esta mascota? Todos sus historiales médicos, vacunas y desparasitaciones se borrarán. Esta acción no se puede deshacer.')) return
     
-    // Check if pet has appointments before deleting
-    const { data: appointments } = await supabase.from('appointments').select('id').eq('pet_id', id).limit(1)
-    if (appointments && appointments.length > 0) {
-      alert('No se puede eliminar esta mascota porque está vinculada a una cita. Elimina o cancela sus citas primero.')
-      return
-    }
-
     setLoading(true)
     const { error: err } = await supabase.from('pets').delete().eq('id', id)
     if (err) { alert(err.message); setLoading(false) }
