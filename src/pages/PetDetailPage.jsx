@@ -41,6 +41,22 @@ export default function PetDetailPage() {
     setLoading(false)
   }
 
+  async function handleDeletePet() {
+    if (!confirm('¿Eliminar esta mascota? Todos sus historiales médicos, vacunas y desparasitaciones se borrarán. Esta acción no se puede deshacer.')) return
+    
+    // Check if pet has appointments before deleting
+    const { data: appointments } = await supabase.from('appointments').select('id').eq('pet_id', id).limit(1)
+    if (appointments && appointments.length > 0) {
+      alert('No se puede eliminar esta mascota porque está vinculada a una cita. Elimina o cancela sus citas primero.')
+      return
+    }
+
+    setLoading(true)
+    const { error: err } = await supabase.from('pets').delete().eq('id', id)
+    if (err) { alert(err.message); setLoading(false) }
+    else navigate('/pets')
+  }
+
   function getAge(birthDate) {
     if (!birthDate) return 'Desconocida'
     const years = differenceInYears(new Date(), new Date(birthDate))
@@ -66,7 +82,10 @@ export default function PetDetailPage() {
             Propietario: <Link to={`/customers/${pet.customers?.id}`}>{pet.customers?.full_name}</Link>
           </p>
         </div>
-        <button className="btn btn-secondary" onClick={() => setModal('edit')} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}><Edit2 size={14} /> Editar</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="btn btn-ghost" style={{ color: 'var(--danger)' }} onClick={handleDeletePet} disabled={isSuspended}>Eliminar</button>
+          <button className="btn btn-secondary" onClick={() => setModal('edit')} disabled={isSuspended} title={isSuspended ? "Cuenta suspendida. Por favor comunícate con PETID Admin para reactivarla." : ""}><Edit2 size={14} /> Editar</button>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20 }}>

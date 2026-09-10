@@ -131,6 +131,14 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
     }
   }
 
+  async function handleDelete() {
+    if (!confirm('¿Eliminar esta cita? Esta acción no se puede deshacer.')) return
+    setLoading(true)
+    const { error: err } = await supabase.from('appointments').delete().eq('id', appointment.id)
+    if (err) { setError(err.message); setLoading(false) }
+    else onSaved()
+  }
+
   const SPECIES_ICON = { dog: '🐕', cat: '🐈', bird: '🦜', rabbit: '🐇', reptile: '🦎', other: '🐾' }
 
   return (
@@ -216,12 +224,19 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
                 value={form.notes} onChange={e => set('notes', e.target.value)} />
             </div>
           </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? <div className="spinner" style={{ borderTopColor: 'white' }} /> : <Save size={16} />}
-              {loading ? 'Guardando…' : 'Guardar'}
-            </button>
+          <div className="modal-footer" style={{ display: 'flex', justifyContent: isEdit ? 'space-between' : 'flex-end' }}>
+            {isEdit && (
+              <button type="button" className="btn btn-ghost" style={{ color: 'var(--danger)' }} onClick={handleDelete} disabled={loading}>
+                Eliminar Cita
+              </button>
+            )}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="button" className="btn btn-secondary" onClick={onClose}>Cancelar</button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? <div className="spinner" style={{ borderTopColor: 'white' }} /> : <Save size={16} />}
+                {loading ? 'Guardando…' : 'Guardar'}
+              </button>
+            </div>
           </div>
         </form>
       </div>
