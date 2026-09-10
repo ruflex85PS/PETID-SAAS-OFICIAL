@@ -3,7 +3,7 @@ import { X, Save } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { format } from 'date-fns'
-import { sendAppointmentConfirmation } from '../../lib/whatsapp'
+
 
 export default function AppointmentModal({ appointment, onClose, onSaved }) {
   const { organization } = useAuth()
