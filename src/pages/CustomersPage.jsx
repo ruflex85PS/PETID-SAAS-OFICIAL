@@ -37,8 +37,12 @@ export default function CustomersPage() {
   async function deleteCustomer(id) {
     if (!confirm('¿Eliminar este cliente? Esta acción no se puede deshacer.')) return
     setDeleting(id)
-    await supabase.from('customers').delete().eq('id', id)
-    setCustomers(prev => prev.filter(c => c.id !== id))
+    const { error } = await supabase.from('customers').delete().eq('id', id)
+    if (error) {
+      alert("No se puede eliminar este cliente porque tiene citas o mascotas registradas en el sistema. Primero elimina sus registros asociados.")
+    } else {
+      setCustomers(prev => prev.filter(c => c.id !== id))
+    }
     setDeleting(null)
   }
 

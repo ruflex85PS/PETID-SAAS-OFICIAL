@@ -400,7 +400,7 @@ tbody tr:hover td { background: var(--gray-50); }
 .divider { height: 1px; background: var(--gray-200); margin: 16px 0; }
 
 /* ---- Tooltip ---- */
-[title] { cursor: help; }
+/* [title] { cursor: help; } */
 
 /* ---- Responsive utilities ---- */
 .hide-mobile { }
