@@ -80,7 +80,7 @@ export default async function handler(req, res) {
   let enviados24 = 0
   for (const cita of citas24 || []) {
     if (!cita.customers?.phone) continue
-    const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
+    const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
 
     const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24_hrs_antes', [
       cita.customers.full_name,
@@ -122,7 +122,7 @@ export default async function handler(req, res) {
 
   for (const cita of citas30 || []) {
     if (!cita.customers?.phone) continue
-    const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' })
+    const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
     const msg = 'Hola ' + cita.customers.full_name + ', tu cita en ' + cita.organizations.name + ' es en 30 minutos a las ' + hora + '. Te esperamos!'
     await sendWhatsAppText(cita.customers.phone, msg)
   }

@@ -5,17 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-async function sendWhatsApp(to, message) {
-  const token = process.env.VITE_WHATSAPP_TOKEN
-  const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
-  const cleanPhone = to.replace(/\D/g, '')
-  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
-  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: message } })
-  })
-}
+
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -53,40 +43,42 @@ export default async function handler(req, res) {
           const cleanPhone = phone.replace(/\D/g, '')
           const localPhone = '0' + cleanPhone.slice(3)
 
+          // Fetch ALL customers with this phone (could be in multiple clinics)
           const { data: customers } = await supabase
             .from('customers')
             .select('id, full_name, organization_id')
             .or('phone.eq.' + localPhone + ',phone.eq.' + phone + ',phone.eq.+' + cleanPhone)
-            .limit(1)
 
-          console.log('Customers:', JSON.stringify(customers))
-          const customer = customers?.[0]
+          console.log('Customers found:', customers?.length)
 
-          if (customer) {
+          if (customers && customers.length > 0) {
+            const customerIds = customers.map(c => c.id)
             const now = new Date()
             const future = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
+            // Find the nearest upcoming appointment across ALL these customers
             const { data: appointments } = await supabase
               .from('appointments')
-              .select('id, title, scheduled_at, pets(name)')
-              .eq('customer_id', customer.id)
+              .select('id, title, scheduled_at, customer_id, pets(name)')
+              .in('customer_id', customerIds)
               .in('status', ['scheduled', 'confirmed'])
               .gte('scheduled_at', now.toISOString())
               .lte('scheduled_at', future.toISOString())
               .order('scheduled_at', { ascending: true })
               .limit(1)
 
-            console.log('Appointments:', JSON.stringify(appointments))
+            console.log('Appointments found:', appointments?.length)
             const appointment = appointments?.[0]
 
             if (appointment) {
+              const customer = customers.find(c => c.id === appointment.customer_id)
               let newStatus = null
               let replyMsg = ''
 
-              if (buttonText === 'Confirmar') {
+              if (buttonText.trim() === 'Confirmar') {
                 newStatus = 'confirmed'
                 replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
-              } else if (buttonText === 'Reprogramar') {
+              } else if (buttonText.trim() === 'Reprogramar') {
                 newStatus = 'rescheduled'
                 const { data: rescheduleTemplate } = await supabase
                   .from('whatsapp_templates')
@@ -97,13 +89,14 @@ export default async function handler(req, res) {
                 replyMsg = (rescheduleTemplate?.message || 'Listo {nombre}, nos comunicaremos contigo para reprogramar la cita de {mascota}. Que tengas un feliz dia!')
                   .replace('{nombre}', customer.full_name)
                   .replace('{mascota}', petName)
-              } else if (buttonText === 'Cancelar') {
+              } else if (buttonText.trim() === 'Cancelar') {
                 newStatus = 'cancelled'
                 replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'
               }
 
               if (newStatus) {
-                await supabase.from('appointments').update({ status: newStatus }).eq('id', appointment.id)
+                const { error: updateErr } = await supabase.from('appointments').update({ status: newStatus }).eq('id', appointment.id)
+                console.log('Update status result:', updateErr ? 'Error' : 'Success')
               }
 
               if (replyMsg) {
@@ -118,4 +111,17 @@ export default async function handler(req, res) {
     }
     return res.status(200).json({ status: 'ok' })
   }
+}
+
+async function sendWhatsApp(to, message) {
+  const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim()
+  const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
+  if (!token || !phoneId) { console.error('Missing WhatsApp credentials'); return; }
+  const cleanPhone = to.replace(/\D/g, '')
+  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: message } })
+  })
 }
