@@ -23,8 +23,7 @@ export default async function handler(req, res) {
       const body = req.body
       const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]
       
-      // Guardar en Supabase para debug
-      await supabase.from('whatsapp_templates').update({ name: 'DEBUG: ' + JSON.stringify(body).slice(0,200) }).eq('template_type', 'slot_recovery')
+
 
       if (message) {
         const phone = message.from
