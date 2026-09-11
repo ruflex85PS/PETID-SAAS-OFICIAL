@@ -71,7 +71,7 @@ export default async function handler(req, res) {
 
   const { data: citas24 } = await supabase
     .from('appointments')
-    .select('*, customers(full_name, phone), services(name), organizations(name)')
+    .select('*, customers(full_name, phone), services(name), organizations(name), pets(name)')
     .eq('status', 'scheduled')
     .eq('reminder_24h_sent', false)
     .gte('scheduled_at', tomorrowStart.toISOString())
@@ -80,10 +80,20 @@ export default async function handler(req, res) {
   let enviados24 = 0
   for (const cita of citas24 || []) {
     if (!cita.customers?.phone) continue
+    
+    // Skip sending 24h reminder if the appointment was created less than 12 hours ago
+    const createdDate = new Date(cita.created_at)
+    if (now.getTime() - createdDate.getTime() < 12 * 60 * 60 * 1000) {
+      // Mark as sent so it doesn't try again, but don't actually send it to avoid spam
+      await supabase.from('appointments').update({ reminder_24h_sent: true }).eq('id', cita.id)
+      continue
+    }
+
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
 
-    const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24_hrs_antes', [
+    const result = await sendWhatsAppTemplate(cita.customers.phone, 'recordatorio_24h_cx', [
       cita.customers.full_name,
+      cita.pets?.name || 'tu mascota',
       cita.organizations.name,
       hora,
       cita.services?.name || cita.title

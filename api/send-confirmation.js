@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   let cleanPhone = to.replace(/\D/g, "")
   if (cleanPhone.startsWith("0")) { cleanPhone = "593" + cleanPhone.slice(1) }
-  const { customerName, businessName, fecha, hora, serviceName } = params
+  const { customerName, petName, businessName, fecha, hora, serviceName } = params
 
   try {
     const response = await fetch("https://graph.facebook.com/v18.0/" + PHONE_ID + "/messages", {
@@ -29,12 +29,13 @@ export default async function handler(req, res) {
         to: cleanPhone,
         type: "template",
         template: {
-          name: "confirmacion_cita",
+          name: "cita_confirmada_cx",
           language: { code: "es" },
           components: [{
             type: "body",
             parameters: [
               { type: "text", text: customerName },
+              { type: "text", text: petName },
               { type: "text", text: businessName },
               { type: "text", text: fecha },
               { type: "text", text: hora },

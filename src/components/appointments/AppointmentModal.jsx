@@ -105,6 +105,7 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
               params: {
                 customerName: customer.full_name,
                 businessName: organization.name,
+                petName: pet?.name || 'tu mascota',
                 fecha,
                 hora,
                 serviceName: service?.name || form.title
