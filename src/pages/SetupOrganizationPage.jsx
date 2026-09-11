@@ -34,10 +34,11 @@ export default function SetupOrganizationPage() {
     setLoading(true)
 
     try {
-      // 1. Create organization
-      const { data: org, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
+      // 1. Create organization via API (bypasses RLS)
+      const res = await fetch('/api/create-org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: name.trim(),
           slug: generateSlug(name),
           industry,
@@ -45,10 +46,9 @@ export default function SetupOrganizationPage() {
           email: email || null,
           address: address || null,
         })
-        .select()
-        .single()
-
-      if (orgError) throw orgError
+      })
+      const org = await res.json()
+      if (!res.ok) throw new Error(org.error || 'Error al crear la organización')
 
       // 2. Link profile to organization
       const { error: profileError } = await supabase
