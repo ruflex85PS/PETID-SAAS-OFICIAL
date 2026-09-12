@@ -26,7 +26,26 @@ async function sendWhatsAppTemplate(to, templateName, params) {
       }
     })
   })
-  return res.json()
+  const data = await res.json()
+  
+  if (data.error) {
+    console.warn("Template failed, attempting fallback:", data.error.message)
+    const fallbackText = `Hola ${params[0]} 👋, solo pasamos a recordarte que mañana es la cita de ${params[1]} en ${params[2]} a las ${params[3]} para su ${params[4]}. ¿Nos confirmas tu asistencia? (Responde Confirmar, Reprogramar o Cancelar)`
+    
+    const fallbackRes = await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: phone,
+        type: 'text',
+        text: { body: fallbackText }
+      })
+    })
+    return fallbackRes.json()
+  }
+  
+  return data
 }
 
 async function sendWhatsAppText(to, message) {

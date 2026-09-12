@@ -46,6 +46,26 @@ export default async function handler(req, res) {
       })
     })
     const data = await response.json()
+    
+    // Fallback: If template fails (e.g. PENDING), try sending as plain text (works if 24h window is open)
+    if (data.error) {
+      console.warn("Template failed, attempting text fallback:", data.error.message)
+      const fallbackText = `Hola ${customerName}, hemos agendado con éxito la cita para tu mascota ${petName} en ${businessName}. 📍 Fecha: ${fecha} a las ${hora}. Servicio: ${serviceName}.`
+      
+      const fallbackResponse = await fetch("https://graph.facebook.com/v18.0/" + PHONE_ID + "/messages", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + WHATSAPP_TOKEN, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: cleanPhone,
+          type: "text",
+          text: { body: fallbackText }
+        })
+      })
+      const fallbackData = await fallbackResponse.json()
+      return res.status(200).json({ original_error: data.error, fallback: fallbackData })
+    }
+
     return res.status(200).json(data)
   } catch (err) {
     console.error("WhatsApp error:", err);
