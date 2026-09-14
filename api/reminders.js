@@ -7,7 +7,7 @@ const supabase = createClient(
 )
 
 async function sendWhatsAppTemplate(to, templateName, params) {
-  const token = process.env.VITE_WHATSAPP_TOKEN
+  const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN
   const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
   const cleanPhone = to.replace(/\D/g, '')
   const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
@@ -49,7 +49,7 @@ async function sendWhatsAppTemplate(to, templateName, params) {
 }
 
 async function sendWhatsAppText(to, message) {
-  const token = process.env.VITE_WHATSAPP_TOKEN
+  const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN
   const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
   const cleanPhone = to.replace(/\D/g, '')
   const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
@@ -101,12 +101,15 @@ export default async function handler(req, res) {
     if (!cita.customers?.phone) continue
     
     // Skip sending 24h reminder if the appointment was created less than 12 hours ago
+    // [QA OVERRIDE]: Temporarily disabled so the owner can test the buttons immediately
+    /*
     const createdDate = new Date(cita.created_at)
     if (now.getTime() - createdDate.getTime() < 12 * 60 * 60 * 1000) {
       // Mark as sent so it doesn't try again, but don't actually send it to avoid spam
       await supabase.from('appointments').update({ reminder_24h_sent: true }).eq('id', cita.id)
       continue
     }
+    */
 
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
 
