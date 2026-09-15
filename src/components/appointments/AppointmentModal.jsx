@@ -112,9 +112,6 @@ export default function AppointmentModal({ appointment, onClose, onSaved }) {
               }
             })
           }).then(res => res.json()).then(result => { 
-            // [QA OVERRIDE]: Trigger reminders cron job immediately so owner can test buttons
-            fetch('/api/reminders').catch(console.error);
-
             supabase.from("automations").insert([{ 
               organization_id: organization.id, 
               automation_type: "confirmation_request", 
