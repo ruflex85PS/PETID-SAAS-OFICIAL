@@ -116,8 +116,13 @@ async function sendWhatsApp(to, message) {
   const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim()
   const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
   if (!token || !phoneId) { console.error('Missing WhatsApp credentials'); return; }
-  const cleanPhone = to.replace(/\D/g, '')
-  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+  let cleanPhone = to.replace(/\D/g, '')
+  if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
+    cleanPhone = '593' + cleanPhone
+  } else if (cleanPhone.startsWith('0')) {
+    cleanPhone = '593' + cleanPhone.slice(1)
+  }
+  const phone = cleanPhone
   await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },

@@ -9,8 +9,13 @@ const supabase = createClient(
 async function sendWhatsAppTemplate(to, templateName, params) {
   const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN
   const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
-  const cleanPhone = to.replace(/\D/g, '')
-  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+  let cleanPhone = to.replace(/\D/g, '')
+  if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
+    cleanPhone = '593' + cleanPhone
+  } else if (cleanPhone.startsWith('0')) {
+    cleanPhone = '593' + cleanPhone.slice(1)
+  }
+  const phone = cleanPhone
 
   const res = await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
     method: 'POST',
@@ -22,7 +27,16 @@ async function sendWhatsAppTemplate(to, templateName, params) {
       template: {
         name: templateName,
         language: { code: 'es' },
-        components: [{ type: 'body', parameters: params.map(p => ({ type: 'text', text: p })) }]
+        components: [{
+          type: 'body',
+          parameters: [
+            { type: 'text', text: params[0] || 'Cliente' },
+            { type: 'text', text: params[1] || 'tu mascota' },
+            { type: 'text', text: params[2] || 'nuestra clínica' },
+            { type: 'text', text: params[3] || 'hora acordada' },
+            { type: 'text', text: params[4] || 'Consulta' }
+          ]
+        }]
       }
     })
   })
@@ -30,7 +44,7 @@ async function sendWhatsAppTemplate(to, templateName, params) {
   
   if (data.error) {
     console.warn("Template failed, attempting fallback:", data.error.message)
-    const fallbackText = `Hola ${params[0]} 👋, solo pasamos a recordarte que mañana es la cita de ${params[1]} en ${params[2]} a las ${params[3]} para su ${params[4]}. ¿Nos confirmas tu asistencia? (Responde Confirmar, Reprogramar o Cancelar)`
+    const fallbackText = `Hola ${params[0] || 'Cliente'} 👋, solo pasamos a recordarte que mañana es la cita de ${params[1] || 'tu mascota'} en ${params[2] || 'nuestra clínica'} a las ${params[3] || 'hora acordada'} para su ${params[4] || 'Consulta'}. ¿Nos confirmas tu asistencia? (Responde Confirmar, Reprogramar o Cancelar)`
     
     const fallbackRes = await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
       method: 'POST',
@@ -51,8 +65,13 @@ async function sendWhatsAppTemplate(to, templateName, params) {
 async function sendWhatsAppText(to, message) {
   const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN
   const phoneId = process.env.VITE_WHATSAPP_PHONE_ID
-  const cleanPhone = to.replace(/\D/g, '')
-  const phone = cleanPhone.startsWith('0') ? '593' + cleanPhone.slice(1) : cleanPhone
+  let cleanPhone = to.replace(/\D/g, '')
+  if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
+    cleanPhone = '593' + cleanPhone
+  } else if (cleanPhone.startsWith('0')) {
+    cleanPhone = '593' + cleanPhone.slice(1)
+  }
+  const phone = cleanPhone
 
   await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
     method: 'POST',

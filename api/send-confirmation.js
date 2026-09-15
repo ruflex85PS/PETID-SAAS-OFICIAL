@@ -16,8 +16,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing to or params' })
   }
 
-  let cleanPhone = to.replace(/\D/g, "")
-  if (cleanPhone.startsWith("0")) { cleanPhone = "593" + cleanPhone.slice(1) }
+    let cleanPhone = to.replace(/\D/g, "")
+    // Si tiene 9 dígitos y empieza con 9 (ej. 996504236), le falta el 0 inicial
+    if (cleanPhone.length === 9 && cleanPhone.startsWith("9")) {
+      cleanPhone = "593" + cleanPhone
+    } else if (cleanPhone.startsWith("0")) { 
+      cleanPhone = "593" + cleanPhone.slice(1) 
+    }
   const { customerName, petName, businessName, fecha, hora, serviceName } = params
 
   try {
@@ -34,12 +39,12 @@ export default async function handler(req, res) {
           components: [{
             type: "body",
             parameters: [
-              { type: "text", text: customerName },
-              { type: "text", text: petName },
-              { type: "text", text: businessName },
-              { type: "text", text: fecha },
-              { type: "text", text: hora },
-              { type: "text", text: serviceName }
+              { type: "text", text: customerName || "Cliente" },
+              { type: "text", text: petName || "tu mascota" },
+              { type: "text", text: businessName || "nuestra clínica" },
+              { type: "text", text: fecha || "fecha acordada" },
+              { type: "text", text: hora || "hora acordada" },
+              { type: "text", text: serviceName || "Consulta" }
             ]
           }]
         }
@@ -50,7 +55,7 @@ export default async function handler(req, res) {
     // Fallback: If template fails (e.g. PENDING), try sending as plain text (works if 24h window is open)
     if (data.error) {
       console.warn("Template failed, attempting text fallback:", data.error.message)
-      const fallbackText = `Hola ${customerName}, hemos agendado con éxito la cita para tu mascota ${petName} en ${businessName}. 📍 Fecha: ${fecha} a las ${hora}. Servicio: ${serviceName}.`
+      const fallbackText = `Hola ${customerName || "Cliente"}, hemos agendado con éxito la cita para tu mascota ${petName || "tu mascota"} en ${businessName || "nuestra clínica"}. 📍 Fecha: ${fecha || "fecha acordada"} a las ${hora || "hora acordada"}. Servicio: ${serviceName || "Consulta"}.`
       
       const fallbackResponse = await fetch("https://graph.facebook.com/v18.0/" + PHONE_ID + "/messages", {
         method: "POST",
