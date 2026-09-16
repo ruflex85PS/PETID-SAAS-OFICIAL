@@ -104,31 +104,33 @@ function getTomorrowRangeEcuador(now) {
 export default async function handler(req, res) {
   const now = new Date()
 
-  // --- Recordatorio 24h: todas las citas de "mañana" (dia completo, hora Ecuador) ---
-  const { tomorrowStart, tomorrowEnd } = getTomorrowRangeEcuador(now)
+  // Buscar citas en la ventana de las proximas 2 a 25 horas
+  const windowStart = new Date(now.getTime() + 2 * 60 * 60 * 1000)
+  const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000)
 
   const { data: citas24 } = await supabase
     .from('appointments')
-    .select('*, customers(full_name, phone), services(name), organizations(name), pets(name)')
+    .select('*, customers(*), pets(*), organizations(*), services(*)')
     .eq('status', 'scheduled')
     .eq('reminder_24h_sent', false)
-    .gte('scheduled_at', tomorrowStart.toISOString())
-    .lte('scheduled_at', tomorrowEnd.toISOString())
+    .gte('scheduled_at', windowStart.toISOString())
+    .lte('scheduled_at', windowEnd.toISOString())
+
+  console.log('Citas para 24h:', citas24?.length)
 
   let enviados24 = 0
-  for (const cita of citas24 || []) {
-    if (!cita.customers?.phone) continue
-    
-    // Skip sending 24h reminder if the appointment was created less than 12 hours ago
-    // [QA OVERRIDE]: Temporarily disabled so Andy can test the cron job at 6 PM
-    /*
-    const createdDate = new Date(cita.created_at)
-    if (now.getTime() - createdDate.getTime() < 12 * 60 * 60 * 1000) {
-      // Mark as sent so it doesn't try again, but don't actually send it to avoid spam
-      await supabase.from('appointments').update({ reminder_24h_sent: true }).eq('id', cita.id)
-      continue
-    }
-    */
+  if (citas24) {
+    for (const cita of citas24) {
+      if (!cita.customers?.phone) continue
+      
+      // Buffer Anti-Spam: Si la cita fue creada hace menos de 60 minutos, saltar por ahora
+      // Esto evita que le llegue la confirmación y el recordatorio al mismo tiempo.
+      // Se enviará en la siguiente ejecución del cron (en 1 hora).
+      const createdDate = new Date(cita.created_at)
+      if (now.getTime() - createdDate.getTime() < 60 * 60 * 1000) {
+        console.log(`Cita ${cita.id} omitida temporalmente (creada hace menos de 1h)`)
+        continue
+      }
 
     const hora = new Date(cita.scheduled_at).toLocaleTimeString('es-EC', { timeZone: 'America/Guayaquil', hour: '2-digit', minute: '2-digit' })
 
@@ -157,6 +159,7 @@ export default async function handler(req, res) {
     }])
 
     enviados24++
+  }
   }
 
   // --- Recordatorio 30 minutos (se mantiene igual que antes) ---
