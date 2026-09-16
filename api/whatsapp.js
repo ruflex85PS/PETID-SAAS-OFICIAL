@@ -62,7 +62,7 @@ export default async function handler(req, res) {
               .from('appointments')
               .select('id, title, scheduled_at, customer_id, pets(name)')
               .in('customer_id', customerIds)
-              .in('status', ['scheduled', 'confirmed'])
+              .in('status', ['scheduled', 'confirmed', 'rescheduled'])
               .gte('scheduled_at', now.toISOString())
               .lte('scheduled_at', future.toISOString())
               .order('scheduled_at', { ascending: true })
