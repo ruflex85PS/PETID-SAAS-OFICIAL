@@ -36,6 +36,8 @@ export default async function handler(req, res) {
           buttonText = message.button?.text
         } else if (msgType === 'interactive') {
           buttonText = message.interactive?.button_reply?.title || message.interactive?.list_reply?.title
+        } else if (msgType === 'text') {
+          buttonText = message.text?.body
         }
 
         console.log('Phone:', phone, 'Type:', msgType, 'Button:', buttonText)
@@ -76,23 +78,29 @@ export default async function handler(req, res) {
               let newStatus = null
               let replyMsg = ''
 
-              if (buttonText.trim() === 'Confirmar') {
+              const textLower = buttonText.toLowerCase()
+              if (textLower.includes('confirmar') || textLower.includes('confirm')) {
                 newStatus = 'confirmed'
                 replyMsg = 'Perfecto ' + customer.full_name + ', tu cita esta confirmada. Te esperamos!'
-              } else if (buttonText.trim() === 'Reprogramar') {
+              } else if (textLower.includes('reprogramar') || textLower.includes('reprogram')) {
                 newStatus = 'rescheduled'
                 const { data: rescheduleTemplate } = await supabase
                   .from('whatsapp_templates')
                   .select('message')
                   .eq('template_type', 'reschedule_reply')
-                  .single()
+                  // Removed .single() to avoid crashes if multiple orgs have this template
+                  .limit(1)
+                const templateMsg = rescheduleTemplate?.[0]?.message
                 const petName = appointment.pets?.name || 'tu mascota'
-                replyMsg = (rescheduleTemplate?.message || 'Listo {nombre}, nos comunicaremos contigo para reprogramar la cita de {mascota}. Que tengas un feliz dia!')
+                replyMsg = (templateMsg || 'Listo {nombre}, nos comunicaremos contigo para reprogramar la cita de {mascota}. Que tengas un feliz dia!')
                   .replace('{nombre}', customer.full_name)
                   .replace('{mascota}', petName)
-              } else if (buttonText.trim() === 'Cancelar') {
+              } else if (textLower.includes('cancelar') || textLower.includes('cancel')) {
                 newStatus = 'cancelled'
                 replyMsg = 'Lamentamos que no puedas asistir ' + customer.full_name + '. Tu cita ha sido cancelada. Hasta pronto!'
+              } else {
+                // FALLBACK: If they pressed a weird button or sent text we don't understand
+                replyMsg = 'Hemos recibido tu mensaje ' + customer.full_name + '. La clinica se pondra en contacto contigo pronto.'
               }
 
               if (newStatus) {
