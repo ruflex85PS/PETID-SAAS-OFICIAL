@@ -21,6 +21,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
+    const debugLog = []
     try {
       const body = req.body
       const message = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0]
@@ -117,27 +118,38 @@ export default async function handler(req, res) {
 
               if (newStatus) {
                 const { error: updateErr } = await supabase.from('appointments').update({ status: newStatus }).eq('id', appointment.id)
-                console.log('Update status result:', updateErr ? 'Error' : 'Success')
+                debugLog.push('Update result: ' + (updateErr ? updateErr.message : 'Success'))
               }
 
               if (replyMsg) {
-                await sendWhatsApp(phone, replyMsg)
+                debugLog.push('Attempting to send WhatsApp: ' + replyMsg)
+                const sendResult = await sendWhatsApp(phone, replyMsg)
+                debugLog.push('Send result: ' + JSON.stringify(sendResult))
               }
+            } else {
+              debugLog.push('No appointment found')
             }
+          } else {
+            debugLog.push('No customer found')
           }
+        } else {
+          debugLog.push('No buttonText extracted')
         }
+      } else {
+        debugLog.push('No message found in payload')
       }
+      return res.status(200).json({ status: 'ok', debug: debugLog })
     } catch (err) {
       console.error('Webhook error:', err)
+      return res.status(200).json({ status: 'error', error: err.message })
     }
-    return res.status(200).json({ status: 'ok' })
   }
 }
 
 async function sendWhatsApp(to, message) {
   const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim()
   const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
-  if (!token || !phoneId) { console.error('Missing WhatsApp credentials'); return; }
+  if (!token || !phoneId) { return { error: 'Missing WhatsApp credentials' }; }
   let cleanPhone = to.replace(/\D/g, '')
   if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
     cleanPhone = '593' + cleanPhone
@@ -145,9 +157,11 @@ async function sendWhatsApp(to, message) {
     cleanPhone = '593' + cleanPhone.slice(1)
   }
   const phone = cleanPhone
-  await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
+  const res = await fetch('https://graph.facebook.com/v18.0/' + phoneId + '/messages', {
     method: 'POST',
     headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ messaging_product: 'whatsapp', to: phone, type: 'text', text: { body: message } })
   })
+  const data = await res.json()
+  return data
 }
