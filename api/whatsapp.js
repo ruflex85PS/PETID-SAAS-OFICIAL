@@ -3,7 +3,7 @@ import ws from 'ws'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY,
   { realtime: { transport: ws } }
 )
 
@@ -44,6 +44,11 @@ export default async function handler(req, res) {
         console.log('Phone:', phone, 'Type:', msgType, 'Button:', buttonText)
 
         // DEBUG: Log the incoming webhook to automations table
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (adminEmail && adminPassword) {
+          await supabase.auth.signInWithPassword({ email: adminEmail, password: adminPassword });
+        }
         await supabase.from('automations').insert([{
           organization_id: '7dc97a41-55be-40ce-9487-fe7a9460d9e5', // Hardcoded to VETPS for debug visibility
           automation_type: 'incoming_webhook',

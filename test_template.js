@@ -1,31 +1,12 @@
-const token = process.env.VITE_WHATSAPP_TOKEN || 'EAAMbk3ngtSIBRZBo2ZBOX84GunTLfY3vK5TnweLZAwQOjoJTczHrQL69dZCySW2jSs3apJuGUECiN6KBIIM4jNWXOTkxUdUQ6Rm3pnTT0UIwmqr7dmZBEdADVehhZBRtgZCbioLGYFKhI80DyETyYW9lQ7XdX4qvPc51YMSHr1aZBjY2qXLsbRLSLoPiioLx'
-const phoneId = process.env.VITE_WHATSAPP_PHONE_ID || '1216728231519909'
+import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://pmfchiabvzyawmcmbhck.supabase.co'
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZmNoaWFidnp5YXdtY21iaGNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExODUzNjAsImV4cCI6MjA5Njc2MTM2MH0._T8WSbBSYyh_x6J5xzxSGWs7F8XemIRJzoffod0Q-Bk'
+const supabaseAnon = createClient(supabaseUrl, supabaseKey, { realtime: { transport: ws } })
 
 async function run() {
-  const response = await fetch("https://graph.facebook.com/v18.0/" + phoneId + "/messages", {
-    method: "POST",
-    headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      to: "593996504236",
-      type: "template",
-      template: {
-        name: "recordatorio_24h_cx",
-        language: { code: "es" },
-        components: [{
-          type: "body",
-          parameters: [
-            { type: "text", text: "Juan Pablo Salazar" },
-            { type: "text", text: "Cash" },
-            { type: "text", text: "VETPS" },
-            { type: "text", text: "06:00 p. m." },
-            { type: "text", text: "Consulta General" }
-          ]
-        }]
-      }
-    })
-  })
-  const data = await response.json()
-  console.log(JSON.stringify(data, null, 2))
+  await supabaseAnon.auth.signInWithPassword({ email: 'jpsalazargarcia@gmail.com', password: '10111985' })
+  const { data, error } = await supabaseAnon.from('whatsapp_templates').select('*').eq('template_type', 'reschedule_reply').single()
+  console.log("Reschedule Template single():", error ? error.message : "Success")
 }
 run()
