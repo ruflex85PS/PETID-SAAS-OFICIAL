@@ -3,8 +3,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const WHATSAPP_TOKEN = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || 'EAATPwIgNsnIBSvcT6MZAzAgqR6MesZAD8xumSVFVoFpfXaJlg91w8ZAiqCiU8JZCh3yJkawXKl1ZBZAMiYlJ63EZCrZBXpL2wdLQelZBLbLmuADI7jcz6XlGC7JKj5SEPSW58AdWUHzXVrZBOnQmD0UDgCGdZC6coIPFWxcvXWZB1PBZA14wOeIX8kRZCahleZAGLHlO04epUyZC2J3ooYDla8EpSRlaKYYVAh0fPLNlenvZCSquGJNx4hoD9tMZBn9JZAbFcTncMiHpZByHZCUVc89MKIJptEMtuwAZDZD').trim();
-  const PHONE_ID = (process.env.VITE_WHATSAPP_PHONE_ID || '1277147338823083').trim();
+  const WHATSAPP_TOKEN = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim();
+  const PHONE_ID = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim();
 
   if (!WHATSAPP_TOKEN || !PHONE_ID) {
     console.error('WhatsApp credentials missing on server');

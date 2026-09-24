@@ -152,8 +152,8 @@ export default async function handler(req, res) {
 }
 
 async function sendWhatsApp(to, message) {
-  const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || 'EAATPwIgNsnIBSvcT6MZAzAgqR6MesZAD8xumSVFVoFpfXaJlg91w8ZAiqCiU8JZCh3yJkawXKl1ZBZAMiYlJ63EZCrZBXpL2wdLQelZBLbLmuADI7jcz6XlGC7JKj5SEPSW58AdWUHzXVrZBOnQmD0UDgCGdZC6coIPFWxcvXWZB1PBZA14wOeIX8kRZCahleZAGLHlO04epUyZC2J3ooYDla8EpSRlaKYYVAh0fPLNlenvZCSquGJNx4hoD9tMZBn9JZAbFcTncMiHpZByHZCUVc89MKIJptEMtuwAZDZD').trim()
-  const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '1277147338823083').trim()
+  const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim()
+  const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
   if (!token || !phoneId) { return { error: 'Missing WhatsApp credentials' }; }
   let cleanPhone = to.replace(/\D/g, '')
   if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
