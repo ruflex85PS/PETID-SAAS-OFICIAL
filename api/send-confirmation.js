@@ -7,8 +7,11 @@ export default async function handler(req, res) {
   const PHONE_ID = (process.env.WHATSAPP_PHONE_ID || process.env.VITE_WHATSAPP_PHONE_ID || '').trim();
 
   if (!WHATSAPP_TOKEN || !PHONE_ID) {
-    console.error('WhatsApp credentials missing on server');
-    return res.status(500).json({ error: 'WhatsApp credentials missing' });
+    const missing = [];
+    if (!WHATSAPP_TOKEN) missing.push('Token');
+    if (!PHONE_ID) missing.push('Phone ID');
+    console.error(`WhatsApp credentials missing: ${missing.join(', ')}`);
+    return res.status(500).json({ error: `WhatsApp credentials missing: ${missing.join(', ')}` });
   }
 
   const { to, params } = req.body
