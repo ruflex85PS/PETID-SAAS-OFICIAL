@@ -153,7 +153,7 @@ export default async function handler(req, res) {
 
 async function sendWhatsApp(to, message) {
   const token = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim()
-  const phoneId = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
+  const phoneId = (process.env.WHATSAPP_PHONE_ID || process.env.VITE_WHATSAPP_PHONE_ID || '').trim()
   if (!token || !phoneId) { return { error: 'Missing WhatsApp credentials' }; }
   let cleanPhone = to.replace(/\D/g, '')
   if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {

@@ -8,7 +8,7 @@ const supabase = createClient(
 
 async function sendWhatsAppTemplate(to, templateName, params) {
   const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || ''
-  const phoneId = process.env.VITE_WHATSAPP_PHONE_ID || ''
+  const phoneId = process.env.WHATSAPP_PHONE_ID || process.env.VITE_WHATSAPP_PHONE_ID || ''
   let cleanPhone = to.replace(/\D/g, '')
   if (cleanPhone.length === 9 && cleanPhone.startsWith('9')) {
     cleanPhone = '593' + cleanPhone

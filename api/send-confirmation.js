@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   const WHATSAPP_TOKEN = (process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN || '').trim();
-  const PHONE_ID = (process.env.VITE_WHATSAPP_PHONE_ID || '').trim();
+  const PHONE_ID = (process.env.WHATSAPP_PHONE_ID || process.env.VITE_WHATSAPP_PHONE_ID || '').trim();
 
   if (!WHATSAPP_TOKEN || !PHONE_ID) {
     console.error('WhatsApp credentials missing on server');
