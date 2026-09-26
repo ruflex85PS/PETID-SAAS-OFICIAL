@@ -71,7 +71,7 @@ export default async function handler(req, res) {
         })
       })
       const fallbackData = await fallbackResponse.json()
-      return res.status(200).json({ messages: fallbackData.messages, original_error: data.error, fallback: fallbackData })
+      return res.status(200).json({ messages: fallbackData.messages, original_error: data.error, fallback: fallbackData, debug_phone_data: phoneData })
     }
 
     return res.status(200).json(data)
