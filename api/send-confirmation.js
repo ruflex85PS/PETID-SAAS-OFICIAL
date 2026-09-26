@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         type: "template",
         template: {
           name: "cita_confirmada_cx",
-          language: { code: "es" },
+          language: { code: req.body.lang || "es" },
           components: [{
             type: "body",
             parameters: [
