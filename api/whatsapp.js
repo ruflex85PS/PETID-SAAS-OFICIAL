@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         }
         await supabase.from('automations').insert([{
           organization_id: '7dc97a41-55be-40ce-9487-fe7a9460d9e5', // Hardcoded to VETPS for debug visibility
-          automation_type: 'incoming_webhook',
+          automation_type: 'custom',
           channel: 'whatsapp',
           status: 'received',
           message_preview: `Type: ${msgType} | Text: ${buttonText} | From: ${phone}`,
