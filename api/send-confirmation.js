@@ -37,7 +37,7 @@ export default async function handler(req, res) {
         to: cleanPhone,
         type: "template",
         template: {
-          name: "cita_confirmada_cx",
+          name: "confirmacion_cita_v2",
           language: { code: req.body.lang || "es" },
           components: [{
             type: "body",
