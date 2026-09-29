@@ -14,6 +14,14 @@ export default async function handler(req, res) {
     const mode = req.query['hub.mode']
     const token = req.query['hub.verify_token']
     const challenge = req.query['hub.challenge']
+    
+    if (req.query.debug === 'templates') {
+      const wabaId = "1629142305277788";
+      const token = process.env.WHATSAPP_TOKEN || process.env.VITE_WHATSAPP_TOKEN;
+      const resMeta = await fetch("https://graph.facebook.com/v18.0/" + wabaId + "/message_templates", { headers: { "Authorization": "Bearer " + token } });
+      const data = await resMeta.json();
+      return res.status(200).json(data);
+    }
     if (mode === 'subscribe' && token === 'petid_webhook_2024') {
       return res.status(200).send(challenge)
     }
